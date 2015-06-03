@@ -1,0 +1,15 @@
+{
+  "name": "twitch_checker",
+  "version": "1.0.0",
+  "description": "A simple utility to list all of the twitch users followed streamers that are online.",
+  "main": "twitch_checker.js",
+  "dependencies": {
+    "request": "^2.57.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Caputo",
+  "license": "MIT"
+}
