@@ -1,8 +1,8 @@
 {
-  "name": "twitch_checker",
+  "name": "watchdog",
   "version": "1.0.0",
   "description": "A simple utility to list all of the twitch users followed streamers that are online.",
-  "main": "twitch_checker.js",
+  "main": "watchdog.js",
   "dependencies": {
     "request": "^2.57.0"
   },
