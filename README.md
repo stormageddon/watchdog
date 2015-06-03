@@ -21,5 +21,7 @@ You are now set to begin using Twitch Checker!
 ## To run Twitch Checker
 Simply run `node twitch_checker.js <Your Twitch Username>` in the twitch_checker directory. It's really that easy!
 
+If you want to make it even easier to see who's online, you can alias the above command to `twitch` in your baschrc, zshrc, or the config for whichever shell you use. Just make sure to prepend the full directory path before `twitch_check.js` in the command.
+
 ## Current status
 Twitch Checker is in the very early stages of development. At this point in time, all it will do is display a list of the channels that you watch that are currently streaming.
