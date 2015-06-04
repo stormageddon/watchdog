@@ -6,10 +6,12 @@ var Menu = require('menu');
 var Tray = require('tray');
 var request = require('request');
 var async = require('async');
+var path = require('path');
 
 // Get a users list of followed
 var followed = [];
 var currStreamers = [];
+var prevStreamers = [];
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is GCed.
@@ -80,6 +82,7 @@ var tick = function() {
  console.log("Checking for new streamers");
   getFollowed(args[0], function() {
     console.log('========= Channels Online =========');
+    prevStreamers = currStreamers;
     currStreamers = [];
     async.each(followed, getChannelStatus, function(err) {
       if(!err) {
@@ -95,17 +98,27 @@ var tick = function() {
         console.log('currstreamers length:',currStreamers.length);
         if (currStreamers.length === 0) {
           console.log('set grey');
-          appIcon.setImage('/Users/Mike/Downloads/dota2_gray.jpg');
+          appIcon.setImage(__dirname + '/dota2_gray.jpg');
           labels.push({label: 'No live streams', type: 'normal'});
         }
         else {
           console.log('set not grey');
-          appIcon.setImage('/Users/Mike/Downloads/dota2.png');
+          appIcon.setImage(__dirname + '/dota2.png');
         }
         labels.push({ label: 'Commands', type: 'separator' });
         labels.push({ label: 'Quit', type: 'normal', click: close });
         contextMenu = Menu.buildFromTemplate(labels);
         appIcon.setContextMenu(contextMenu);
+
+        console.log('index:',prevStreamers.indexOf(currStreamers[i]));
+        for(var j = 0; j < currStreamers.length; j++) {
+          console.log('checking');
+          if (prevStreamers.indexOf(currStreamers[j]) == -1) {
+            console.log('curr streamer:',currStreamers[j]);
+            notifyNewStreamer(currStreamers[j]);
+          }
+        }
+
       }
       else {
         console.log('err:',err);
@@ -126,9 +139,21 @@ var openStream = function(streamerName) {
 }
 
 app.on('ready', function() {
-  appIcon = new Tray('/Users/Mike/Downloads/dota2_gray.jpg'); // Only need one Tray icon
+  console.log('notify:',app.atom);
+  appIcon = new Tray(__dirname + '/dota2_gray.jpg'); // Only need one Tray icon
   tick();
 });
+
+var notifier = require('node-notifier');
+
+var notifyNewStreamer = function(streamer) {
+  console.log('notify');
+  notifier.notify({
+    'title': 'Now Online',
+    'message': streamer,
+    'icon': path.join(__dirname, 'dota2.png')
+  });
+}
 
 var close = function() {
   console.log('close app');

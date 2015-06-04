@@ -6,6 +6,7 @@
   "dependencies": {
     "async": "^1.2.0",
     "jquery": "^2.1.4",
+    "node-notifier": "^4.2.1",
     "request": "^2.57.0"
   },
   "devDependencies": {
