@@ -5,6 +5,7 @@
   "main": "watchdog.js",
   "dependencies": {
     "async": "^1.2.0",
+    "jquery": "^2.1.4",
     "request": "^2.57.0"
   },
   "devDependencies": {
