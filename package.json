@@ -13,8 +13,10 @@
     "electron-prebuilt": "^0.27.2"
   },
   "scripts": {
+    "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron watchdog.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Michael Caputo",
   "license": "MIT"
+
 }
