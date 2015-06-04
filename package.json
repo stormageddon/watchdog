@@ -4,9 +4,12 @@
   "description": "A simple utility to list all of the twitch users followed streamers that are online.",
   "main": "watchdog.js",
   "dependencies": {
+    "async": "^1.2.0",
     "request": "^2.57.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "electron-prebuilt": "^0.27.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
