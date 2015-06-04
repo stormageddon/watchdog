@@ -98,12 +98,12 @@ var tick = function() {
         console.log('currstreamers length:',currStreamers.length);
         if (currStreamers.length === 0) {
           console.log('set grey');
-          appIcon.setImage(__dirname + '/dota2_gray.jpg');
+          appIcon.setImage(path.join(__dirname, 'img/dota2_gray.jpg'));
           labels.push({label: 'No live streams', type: 'normal'});
         }
         else {
           console.log('set not grey');
-          appIcon.setImage(__dirname + '/dota2.png');
+          appIcon.setImage(path.join(__dirname, 'img/dota2.png'));
         }
         labels.push({ label: 'Commands', type: 'separator' });
         labels.push({ label: 'Quit', type: 'normal', click: close });
@@ -140,7 +140,7 @@ var openStream = function(streamerName) {
 
 app.on('ready', function() {
   console.log('notify:',app.atom);
-  appIcon = new Tray(__dirname + '/dota2_gray.jpg'); // Only need one Tray icon
+  appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg')); // Only need one Tray icon
   tick();
 });
 
@@ -151,7 +151,7 @@ var notifyNewStreamer = function(streamer) {
   notifier.notify({
     'title': 'Now Online',
     'message': streamer,
-    'icon': path.join(__dirname, 'dota2.png')
+    'icon': path.join(__dirname, 'img/dota2.png')
   });
 }
 
