@@ -30,15 +30,14 @@ app.commandLine.appendSwitch('ppapi-flash-version', '17.0.0.188');
 
 
 var getFollowed = function(username, cb) {
-  //curl -H 'Accept: application/vnd.twitchtv.v3+json' \
-// -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
+  //curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
   followed = [];
   request('https://api.twitch.tv/kraken/users/' + username + '/follows/channels', function(error, response, body) {
     if (!error) {
       var data = JSON.parse(body);
       for (var i = 0; i < data.follows.length; i++) {
         var streamer = data.follows[i];
-        followed.push(streamer.channel.display_name);
+        followed.push({streamName:streamer.channel.name, displayName:streamer.channel.display_name});
       }
       cb();
     }
@@ -46,11 +45,11 @@ var getFollowed = function(username, cb) {
 }
 
 var getChannelStatus = function(channelName, callback) {
-// curl -H 'Accept: application/vnd.twitchtv.v3+json' \
-// -X GET https://api.twitch.tv/kraken/streams/test_channel
-  console.log('channelname:',channelName,callback);
-  request('https://api.twitch.tv/kraken/streams/' + channelName, function(error, response, body) {
+// curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/streams/test_channel
+  console.log('channelname:',channelName.streamName,callback);
+  request('https://api.twitch.tv/kraken/streams/' + channelName.streamName, function(error, response, body) {
     if (!error) {
+      console.log('body:',JSON.parse(body));
       if( JSON.parse(body).stream != null ) {
         console.log('%s is online', channelName);
         currStreamers.push(channelName);
@@ -90,7 +89,7 @@ var tick = function() {
         var selectedStreamer = null;
         var labels = [];
         for (var i = 0; i < currStreamers.length; i++) {
-          labels.push({ label: currStreamers[i], type: 'normal', click: function(streamerName) { openStream(streamerName.label)}.bind(currStreamers[i]) });
+          labels.push({ label: currStreamers[i].displayName, type: 'normal', click: function(streamerName) { openStream(streamerName.label)}.bind(currStreamers[i]) });
         }
 
         appIcon.setToolTip('Online streamers.');
@@ -147,10 +146,10 @@ app.on('ready', function() {
 var notifier = require('node-notifier');
 
 var notifyNewStreamer = function(streamer) {
-  console.log('notify');
+  console.log('notify',streamer);
   notifier.notify({
     'title': 'Now Online',
-    'message': streamer,
+    'message': streamer.displayName,
     'icon': path.join(__dirname, 'img/dota2.png')
   });
 }
