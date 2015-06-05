@@ -7,6 +7,7 @@ var Tray = require('tray');
 var request = require('request');
 var async = require('async');
 var path = require('path');
+var exec = require('child_process').exec;
 
 // Get a users list of followed
 var followed = [];
@@ -18,16 +19,16 @@ var prevStreamers = [];
 var mainWindow = null;
 var appIcon = null;
 
-var window = global;
-window.$ = window.jQuery = require('./node_modules/jquery/dist/jquery.min.js');
-console.log(window.jQuery);
+//var window = global;
+//window = window.jQuery = require('./node_modules/jquery/dist/jquery.min.js');
+
+//console.log(window.jQuery);
 
 // Need flash to display Twitch for now
 app.commandLine.appendSwitch('/Applications/Google Chrome.app/Contents/Versions/43.0.2357.81/Google Chrome Framework.framework/Internet Plug-Ins/PepperFlash/PepperFlashPlayer.plugin');
 
 // Specify flash version, for example, v17.0.0.169
 app.commandLine.appendSwitch('ppapi-flash-version', '17.0.0.188');
-
 
 var getFollowed = function(username, cb) {
   //curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
@@ -133,12 +134,14 @@ var streamWindow = {};
 
 var openStream = function(streamerName) {
   console.log("open stream", streamerName);
-  streamWindow = new BrowserWindow({width: 800, height: 600, "node-integration": false, 'web-preferences': {'plugins': true}} );
-  streamWindow.loadUrl('http://www.twitch.tv/' + streamerName);
-  streamWindow.on('closed', function() {
-    streamWindow = null;
+  exec('livestreamer twitch.tv/' + streamerName + ' best', function(error, stdout, stderr) {
+    if (error) {
+      console.log('Error launching live stream');
+    }
   });
 }
+
+//app.commandLine.appendSwitch('/Applications/Google Chrome.app/Contents/Versions/43.0.2357.81/Google Chrome Framework.framework/Internet Plug-Ins/PepperFlash/PepperFlashPlayer.plugin');
 
 app.on('ready', function() {
   console.log('notify:',app.atom);

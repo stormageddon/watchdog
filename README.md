@@ -5,6 +5,8 @@ Watchdog is a simple application for the Twitch diehard. It removes the pain of 
 
 Watchdog uses [Electron](https://github.com/atom/electron) to launch a javascript application on your desktop. This app lives in your menu bar and displays a list of the streamers you follow when you click the icon! Eventually, clicking one of those streamers names will automatically launch that stream in your favorite video software (such as VLC), making the stream viewing experience super easy and, more importantly, super smooth. Currently, a gray icon means that no streamers are currently live, while a colored icon means that one or more streamers are available to watch.
 
+If you decide you would like to watch one of those streamers, you simply click the streamers name and Livestreamer (if installed) will open up the best video player for you to stream in, and stream directly to that player! The biggest benefit of this is that Livestreamer allows you to avoid all of the nasty flash and programs on Twitch that tend to really bog down the quality of the stream.
+
 ## Goals
 1. Avoid the hassle that is encountered when trying to use twitch. This means finding streamers and launching the stream without ever having to open a browser and navigating to twitch.tv
 2. Provide a clean, easy, and seemless process for viewing your favorite streamers.
@@ -16,6 +18,7 @@ Watchdog requires that you have the following installed on your system:
 
 1. node
 2. npm
+3. [Livestreamer](https://github.com/chrippa/livestreamer)
 
 If you do not have the above installed, please install those first.
 
