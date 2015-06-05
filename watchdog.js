@@ -64,13 +64,13 @@ var getChannelStatus = function(channelName, callback) {
   });
 }
 
-if (process.argv.length < 3) {
+/*if (process.argv.length < 3) {
   console.log('usage: node twitch_checker.js [twitch_username]')
   process.exit(1);
 }
 
 var args = process.argv.slice(2);
-
+*/
 var contextMenu = {} // We don't want a new menu every time
 
 var minutes = .5, the_interval = minutes * 60 * 1000;
@@ -80,7 +80,7 @@ setInterval(function() {
 
 var tick = function() {
  console.log("Checking for new streamers");
-  getFollowed(args[0], function() {
+  getFollowed('the_mother_confessor', function() {
     console.log('========= Channels Online =========');
     prevStreamers = [];
     for( var streamer in currStreamers ){
@@ -134,11 +134,24 @@ var streamWindow = {};
 
 var openStream = function(streamerName) {
   console.log("open stream", streamerName);
-  exec('livestreamer twitch.tv/' + streamerName + ' best', function(error, stdout, stderr) {
+//  cp.fork('livestreamer twitch.tv/' + streamerName + ' best', [], {env: {"ATOM_SHELL_INTERNAL_RUN_AS_NODE":"0"}}, function(error, stdout, stderr) {
+//    if (error) {
+//      console.log('Error launching live stream');
+//    }
+//  });
+
+//  var child = spawn('/usr/local/bin/livestreamer', [streamerName], {detached: true});
+//  child.stdout.on('data', function(data) {
+//    console.log('something happened:',data);
+//  });
+  exec('/usr/local/bin/livestreamer twitch.tv/' + streamerName + ' best', function(error, stdout, stderr) {
+    console.log('stdout:', + stdout);
+    console.log('stderr:' + stderr);
     if (error) {
-      console.log('Error launching live stream');
+      console.log('exec error: ' + error);
     }
   });
+
 }
 
 //app.commandLine.appendSwitch('/Applications/Google Chrome.app/Contents/Versions/43.0.2357.81/Google Chrome Framework.framework/Internet Plug-Ins/PepperFlash/PepperFlashPlayer.plugin');

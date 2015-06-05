@@ -10,7 +10,6 @@
     "request": "^2.57.0"
   },
   "devDependencies": {
-    "electron-prebuilt": "^0.27.2"
   },
   "scripts": {
     "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron watchdog.js",
