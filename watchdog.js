@@ -81,7 +81,10 @@ var tick = function() {
  console.log("Checking for new streamers");
   getFollowed(args[0], function() {
     console.log('========= Channels Online =========');
-    prevStreamers = currStreamers;
+    prevStreamers = [];
+    for( var streamer in currStreamers ){
+      prevStreamers.push(currStreamers[streamer].streamName);
+    }
     currStreamers = [];
     async.each(followed, getChannelStatus, function(err) {
       if(!err) {
@@ -111,8 +114,8 @@ var tick = function() {
 
         console.log('index:',prevStreamers.indexOf(currStreamers[i]));
         for(var j = 0; j < currStreamers.length; j++) {
-          console.log('checking');
-          if (prevStreamers.indexOf(currStreamers[j]) == -1) {
+          console.log('checking', prevStreamers);
+          if (prevStreamers.indexOf(currStreamers[j].streamName) == -1) {
             console.log('curr streamer:',currStreamers[j]);
             notifyNewStreamer(currStreamers[j]);
           }
