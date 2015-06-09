@@ -50,6 +50,7 @@ var getChannelStatus = function(channelName, callback) {
   console.log('channelname:',channelName.streamName,callback);
   request('https://api.twitch.tv/kraken/streams/' + channelName.streamName, function(error, response, body) {
     if (!error) {
+      console.log('body unparsed:',body);
       console.log('body:',JSON.parse(body));
       if( JSON.parse(body).stream != null ) {
         console.log('%s is online', channelName);
