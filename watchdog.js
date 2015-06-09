@@ -8,6 +8,8 @@ var request = require('request');
 var async = require('async');
 var path = require('path');
 var exec = require('child_process').exec;
+var fs = require('fs');
+
 
 // Get a users list of followed
 var followed = [];
@@ -18,11 +20,35 @@ var prevStreamers = [];
 // be closed automatically when the javascript object is GCed.
 var mainWindow = null;
 var appIcon = null;
+var username = null;
 
-var getFollowed = function(username, cb) {
+var minutes = .5, the_interval = minutes * 60 * 1000;
+
+var loadData = function(err, data) {
+  if (!err) {
+    console.log("User is",JSON.parse(data).user);
+    username = JSON.parse(data).user;
+    if (username) {
+      tick();
+      setInterval(function() {
+	if(username != null) {
+	  tick();
+	}
+      }, the_interval);
+    }
+  }
+  else {
+    console.log("Error reading configuration:",err);
+  }
+}
+
+fs.readFile(__dirname + '/config.json', loadData);
+
+var getFollowed = function(user, cb) {
   //curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
+  console.log('getting followed for',user);
   followed = [];
-  request('https://api.twitch.tv/kraken/users/' + username + '/follows/channels', function(error, response, body) {
+  request('https://api.twitch.tv/kraken/users/' + user + '/follows/channels', function(error, response, body) {
     if (!error) {
       var data = JSON.parse(body);
       for (var i = 0; i < data.follows.length; i++) {
@@ -53,13 +79,12 @@ var getChannelStatus = function(channel, callback) {
 
 var contextMenu = {} // We don't want a new menu every time
 
-var minutes = .5, the_interval = minutes * 60 * 1000;
-setInterval(function() {
- tick();
-}, the_interval);
+
+
 
 var tick = function() {
-  getFollowed('the_mother_confessor', function() {
+  console.log('username:',username);
+  getFollowed(username, function() {
     prevStreamers = [];
     for( var streamer in currStreamers ){
       prevStreamers.push(currStreamers[streamer].streamName);
@@ -116,12 +141,10 @@ var openStream = function(streamer) {
       console.log('exec error: ' + error);
     }
   });
-
 }
 
 app.on('ready', function() {
   appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg')); // Only need one Tray icon
-  tick();
 });
 
 var notifier = require('node-notifier');
