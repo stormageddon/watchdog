@@ -34,14 +34,14 @@ var getFollowed = function(username, cb) {
   });
 }
 
-var getChannelStatus = function(channelName, callback) {
+var getChannelStatus = function(channel, callback) {
 // curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/streams/test_channel
-  request('https://api.twitch.tv/kraken/streams/' + channelName.streamName, function(error, response, body) {
+  request('https://api.twitch.tv/kraken/streams/' + channel.streamName, function(error, response, body) {
     if (!error) {
-      console.log('body unparsed:',body);
-      console.log('body:',JSON.parse(body));
+//      console.log('body unparsed:',body);
+//      console.log('body:',JSON.parse(body));
       if( JSON.parse(body).stream != null ) {
-        currStreamers.push(channelName);
+        currStreamers.push(channel);
       }
       callback();
     }
@@ -71,7 +71,12 @@ var tick = function() {
         var selectedStreamer = null;
         var labels = [];
         for (var i = 0; i < currStreamers.length; i++) {
-          labels.push({ label: currStreamers[i].displayName, type: 'normal', click: function(streamerName) { openStream(streamerName.label)}.bind(currStreamers[i]) });
+	  var currStreamer = currStreamers[i];
+          labels.push({ 
+	    label: currStreamers[i].displayName, 
+	    type: 'normal', 
+	    click: function() { openStream(currStreamer); }
+	  });
         }
 
         appIcon.setToolTip('Online streamers.');
@@ -104,9 +109,9 @@ var tick = function() {
 
 var streamWindow = {};
 
-var openStream = function(streamerName) {
-  console.log("open stream", streamerName);
-  exec('/usr/local/bin/livestreamer twitch.tv/' + streamerName + ' best', function(error, stdout, stderr) {
+var openStream = function(streamer) {
+  console.log("open stream", streamer);
+  exec('/usr/local/bin/livestreamer twitch.tv/' + streamer.streamName + ' best', function(error, stdout, stderr) {
     if (error) {
       console.log('exec error: ' + error);
     }
