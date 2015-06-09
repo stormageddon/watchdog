@@ -114,6 +114,7 @@ var tick = function() {
           appIcon.setImage(path.join(__dirname, 'img/dota2.png'));
         }
         labels.push({ label: 'Commands', type: 'separator' });
+	labels.push({ label: 'Settings', type: 'normal', click: openSettings });
         labels.push({ label: 'Quit', type: 'normal', click: close });
         contextMenu = Menu.buildFromTemplate(labels);
         appIcon.setContextMenu(contextMenu);
@@ -139,6 +140,26 @@ var openStream = function(streamer) {
   exec('/usr/local/bin/livestreamer twitch.tv/' + streamer.streamName + ' best', function(error, stdout, stderr) {
     if (error) {
       console.log('exec error: ' + error);
+    }
+  });
+}
+
+var dialog = require('dialog');
+var ipc = require('ipc');
+
+var openSettings = function() {
+//  var win = streamWindow;  // window in which to show the dialog
+//  console.log(dialog.showMessageBox({ type: 'info', buttons: ['Save Settings'], title: 'Settings', message: 'Configure Watchdog here', detail: 'Detailed stuff here' }));  
+  streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+  streamWindow.loadUrl("file:///" + __dirname + "/settings.html");
+  streamWindow.webContents.on('did-finish-load', function() {
+    streamWindow.webContents.send('username', username);
+  });
+
+  ipc.on('saveSettings', function(event, arg) {
+    console.log('data:',arg);
+    if (arg) {
+      username = arg
     }
   });
 }

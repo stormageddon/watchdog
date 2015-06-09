@@ -1,0 +1,19 @@
+<html>
+  <body>
+    <p>This is a horrible settings page</p>
+    <p>Current User: <input type="text" id="usernameTextField"></input></p>
+    <button onClick="updateSettings()">Save settings</button>
+
+    <script>
+      require('ipc').on('username', function(message) {
+        console.log(message);  // Prints the users name
+        document.getElementById("usernameTextField").value = message
+      });
+
+      var updateSettings = function() {
+        alert('new name: ' + document.getElementById("usernameTextField").value);
+        require('ipc').send('saveSettings', document.getElementById("usernameTextField").value);
+      };
+    </script>
+  </body>
+</html>
