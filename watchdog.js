@@ -81,9 +81,6 @@ var getChannelStatus = function(channel, callback) {
 
 var contextMenu = {} // We don't want a new menu every time
 
-
-
-
 var tick = function() {
   console.log('username:',username);
   getFollowed(username, function() {
@@ -98,9 +95,8 @@ var tick = function() {
         var labels = [];
         for (var i = 0; i < currStreamers.length; i++) {
           (function(currStreamer) {
-//	    var currStreamer = currStreamers[i];
             labels.push({
-	      label: currStreamer.displayName,//currStreamers[i].displayName,
+	      label: currStreamer.displayName,
 	      type: 'normal',
 	      click: function() { openStream(currStreamer); }
 	    });
@@ -151,8 +147,6 @@ var dialog = require('dialog');
 var ipc = require('ipc');
 
 var openSettings = function() {
-//  var win = streamWindow;  // window in which to show the dialog
-//  console.log(dialog.showMessageBox({ type: 'info', buttons: ['Save Settings'], title: 'Settings', message: 'Configure Watchdog here', detail: 'Detailed stuff here' }));
   streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
   streamWindow.loadUrl("file:///" + __dirname + "/settings.html");
   streamWindow.webContents.on('did-finish-load', function() {
@@ -163,6 +157,7 @@ var openSettings = function() {
     console.log('data:',arg);
     if (arg) {
       username = arg
+      tick();
     }
   });
 }
