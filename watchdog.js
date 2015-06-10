@@ -94,16 +94,17 @@ var tick = function() {
     currStreamers = [];
     async.each(followed, getChannelStatus, function(err) {
       if(!err) {
-
         var selectedStreamer = null;
         var labels = [];
         for (var i = 0; i < currStreamers.length; i++) {
-	  var currStreamer = currStreamers[i];
-          labels.push({ 
-	    label: currStreamers[i].displayName, 
-	    type: 'normal', 
-	    click: function() { openStream(currStreamer); }
-	  });
+          (function(currStreamer) {
+//	    var currStreamer = currStreamers[i];
+            labels.push({
+	      label: currStreamer.displayName,//currStreamers[i].displayName,
+	      type: 'normal',
+	      click: function() { openStream(currStreamer); }
+	    });
+          })(currStreamers[i]);
         }
 
         appIcon.setToolTip('Online streamers.');
@@ -151,7 +152,7 @@ var ipc = require('ipc');
 
 var openSettings = function() {
 //  var win = streamWindow;  // window in which to show the dialog
-//  console.log(dialog.showMessageBox({ type: 'info', buttons: ['Save Settings'], title: 'Settings', message: 'Configure Watchdog here', detail: 'Detailed stuff here' }));  
+//  console.log(dialog.showMessageBox({ type: 'info', buttons: ['Save Settings'], title: 'Settings', message: 'Configure Watchdog here', detail: 'Detailed stuff here' }));
   streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
   streamWindow.loadUrl("file:///" + __dirname + "/settings.html");
   streamWindow.webContents.on('did-finish-load', function() {
