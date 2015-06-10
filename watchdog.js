@@ -51,11 +51,13 @@ var getFollowed = function(user, cb) {
   request('https://api.twitch.tv/kraken/users/' + user + '/follows/channels', function(error, response, body) {
     if (!error) {
       var data = JSON.parse(body);
-      for (var i = 0; i < data.follows.length; i++) {
-        var streamer = data.follows[i];
-        followed.push({streamName:streamer.channel.name, displayName:streamer.channel.display_name});
+      if (data) {
+	for (var i = 0; i < data.follows.length; i++) {
+          var streamer = data.follows[i];
+          followed.push({streamName:streamer.channel.name, displayName:streamer.channel.display_name});
+	}
+	cb();
       }
-      cb();
     }
   });
 }
@@ -64,8 +66,8 @@ var getChannelStatus = function(channel, callback) {
 // curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/streams/test_channel
   request('https://api.twitch.tv/kraken/streams/' + channel.streamName, function(error, response, body) {
     if (!error) {
-//      console.log('body unparsed:',body);
-//      console.log('body:',JSON.parse(body));
+      console.log('body unparsed:',body);
+      console.log('body:',JSON.parse(body));
       if( JSON.parse(body).stream != null ) {
         currStreamers.push(channel);
       }
