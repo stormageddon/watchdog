@@ -23,10 +23,14 @@ var appIcon = null;
 var username = null;
 
 var minutes = .5, the_interval = minutes * 60 * 1000;
+var config = {};
+var configPath = __dirname.substring(0, __dirname.length - 9);
+console.log('config path:',configPath);
 
 var loadData = function(err, data) {
   if (!err) {
-    username = JSON.parse(data).user;
+    config = JSON.parse(data);
+    username = config.user;
     if (username) {
       tick();
       setInterval(function() {
@@ -35,15 +39,30 @@ var loadData = function(err, data) {
 	}
       }, the_interval);
     }
+    else { // First time launching
+      var dialog = require('dialog');
+      var options = {
+        type: "info",
+        title: "Watchdog",
+        buttons: ["Ok"],
+        message: "Welcome to Watchdog",
+        detail: "Welcome to Watchdog! Before you can use it, you will need to set your username in the settings."
+      };
+//      var splashWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+      streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+      console.log('options:',options.buttons);
+      dialog.showMessageBox(streamWindow, options, openSettings);
+    }
   }
   else {
     console.log("Error reading configuration:",err);
   }
 }
 
-fs.readFile(__dirname + '/config.json', loadData);
+
 
 var getFollowed = function(user, cb) {
+  console.log('Getting followed for',username);
   //curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
   followed = [];
   request('https://api.twitch.tv/kraken/users/' + user + '/follows/channels', function(error, response, body) {
@@ -86,6 +105,7 @@ var getChannelStatus = function(channel, callback) {
 var contextMenu = {} // We don't want a new menu every time
 
 var tick = function() {
+  console.log('tick:',username);
   getFollowed(username, function() {
     prevStreamers = [];
     for( var streamer in currStreamers ){
@@ -122,6 +142,7 @@ var tick = function() {
         appIcon.setContextMenu(contextMenu);
 
         for(var j = 0; j < currStreamers.length; j++) {
+          console.log('checking if already online',currStreamers[j]);
           if (prevStreamers.indexOf(currStreamers[j].streamName) == -1) {
             notifyNewStreamer(currStreamers[j]);
           }
@@ -135,7 +156,7 @@ var tick = function() {
   });
 }
 
-var streamWindow = {};
+var streamWindow = null;
 
 var openStream = function(streamer) {
   console.log("open stream", streamer);
@@ -150,7 +171,9 @@ var dialog = require('dialog');
 var ipc = require('ipc');
 
 var openSettings = function() {
-  streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+  if (!streamWindow) {
+    streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+  }
   streamWindow.loadUrl("file:///" + __dirname + "/settings.html");
   streamWindow.webContents.on('did-finish-load', function() {
     streamWindow.webContents.send('username', username);
@@ -159,19 +182,28 @@ var openSettings = function() {
   ipc.on('saveSettings', function(event, arg) {
     console.log('data:',arg);
     if (arg) {
-      username = arg
+      username = arg;
+      config.user = username;
+      console.log('Writing to ' + configPath + '/tmp/config.json');
+      fs.writeFile(configPath + '/tmp/config.json', JSON.stringify(config), function(err) {
+        if (err) throw err;
+        console.log('Wrote config to file');
+      });
       tick();
     }
   });
 }
 
 app.on('ready', function() {
+  fs.readFile(configPath + '/tmp/config.json', loadData);
   appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg')); // Only need one Tray icon
 });
 
 var notifier = require('node-notifier');
 
 var notifyNewStreamer = function(streamer) {
+  console.log('notify: ', streamer.displayName);
+  console.log('notifier:',notifier);
   notifier.notify({
     'title': 'Now Online',
     'message': streamer.displayName,

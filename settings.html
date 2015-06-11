@@ -11,7 +11,7 @@
       });
 
       var updateSettings = function() {
-        alert('new name: ' + document.getElementById("usernameTextField").value);
+        alert('We will now fetch the streamers that ' + document.getElementById("usernameTextField").value + ' follows! Please give us a few seconds to get the data...');
         require('ipc').send('saveSettings', document.getElementById("usernameTextField").value);
       };
     </script>
