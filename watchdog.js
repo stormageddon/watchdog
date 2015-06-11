@@ -26,7 +26,6 @@ var minutes = .5, the_interval = minutes * 60 * 1000;
 
 var loadData = function(err, data) {
   if (!err) {
-    console.log("User is",JSON.parse(data).user);
     username = JSON.parse(data).user;
     if (username) {
       tick();
@@ -46,7 +45,6 @@ fs.readFile(__dirname + '/config.json', loadData);
 
 var getFollowed = function(user, cb) {
   //curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
-  console.log('getting followed for',user);
   followed = [];
   request('https://api.twitch.tv/kraken/users/' + user + '/follows/channels', function(error, response, body) {
     if (!error) {
@@ -66,9 +64,15 @@ var getChannelStatus = function(channel, callback) {
 // curl -H 'Accept: application/vnd.twitchtv.v3+json' -X GET https://api.twitch.tv/kraken/streams/test_channel
   request('https://api.twitch.tv/kraken/streams/' + channel.streamName, function(error, response, body) {
     if (!error) {
-      console.log('body unparsed:',body);
-      console.log('body:',JSON.parse(body));
-      if( JSON.parse(body).stream != null ) {
+      var stream = {}
+      try {
+        stream = JSON.parse(body).stream
+      } catch(err) {
+        console.log("Error parsing json:", err)
+        stream = null
+      }
+
+      if( stream ) {
         currStreamers.push(channel);
       }
       callback();
@@ -82,7 +86,6 @@ var getChannelStatus = function(channel, callback) {
 var contextMenu = {} // We don't want a new menu every time
 
 var tick = function() {
-  console.log('username:',username);
   getFollowed(username, function() {
     prevStreamers = [];
     for( var streamer in currStreamers ){
