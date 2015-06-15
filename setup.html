@@ -1,0 +1,22 @@
+<html>
+  <body style="background: url('img/setup_bg.jpg')">
+    <div style="text-align: center; margins: 0 auto;">
+      <h1>Hello, what's your Twitch.tv name?</h1>
+      <input type="text" id="usernameTextField" style="border:0; background: transparent; border-bottom:solid 1px #000; outline: none;" onkeypress="updateSettings(event)"></input>
+
+    </div>
+
+    <script>
+      require('ipc').on('username', function(message) {
+        console.log(message);  // Prints the users name
+        document.getElementById("usernameTextField").value = message
+      });
+
+      var updateSettings = function(e) {
+        if (e.keyCode == 13) {
+          require('ipc').send('saveSettings', document.getElementById("usernameTextField").value);
+        }
+      };
+    </script>
+  </body>
+</html>

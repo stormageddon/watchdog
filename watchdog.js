@@ -24,7 +24,7 @@ var username = null;
 
 var minutes = .5, the_interval = minutes * 60 * 1000;
 var config = {};
-var configPath = __dirname.substring(0, __dirname.length - 9);
+var configPath = __dirname;
 console.log('config path:',configPath);
 
 var loadData = function(err, data) {
@@ -48,10 +48,9 @@ var loadData = function(err, data) {
         message: "Welcome to Watchdog",
         detail: "Welcome to Watchdog! Before you can use it, you will need to set your username in the settings."
       };
-//      var splashWindow = new BrowserWindow({ width: 800, height: 600, show: true });
       streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
-      console.log('options:',options.buttons);
-      dialog.showMessageBox(streamWindow, options, openSettings);
+      var setupUrl = "file:///" + __dirname + "/setup.html"
+      openSettings(setupUrl)
     }
   }
   else {
@@ -170,11 +169,13 @@ var openStream = function(streamer) {
 var dialog = require('dialog');
 var ipc = require('ipc');
 
-var openSettings = function() {
+var openSettings = function(url) {
   if (!streamWindow) {
     streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
   }
-  streamWindow.loadUrl("file:///" + __dirname + "/settings.html");
+  var pageURL = url || "file:///" + __dirname + "/settings.html";
+
+  streamWindow.loadUrl(pageURL);
   streamWindow.webContents.on('did-finish-load', function() {
     streamWindow.webContents.send('username', username);
   });
@@ -184,18 +185,19 @@ var openSettings = function() {
     if (arg) {
       username = arg;
       config.user = username;
-      console.log('Writing to ' + configPath + '/tmp/config.json');
-      fs.writeFile(configPath + '/tmp/config.json', JSON.stringify(config), function(err) {
+      console.log('Writing to ' + configPath + '/config.json');
+      fs.writeFile(configPath + '/config.json', JSON.stringify(config), function(err) {
         if (err) throw err;
         console.log('Wrote config to file');
       });
+      streamWindow.close();
       tick();
     }
   });
 }
 
 app.on('ready', function() {
-  fs.readFile(configPath + '/tmp/config.json', loadData);
+  fs.readFile(configPath + '/config.json', loadData);
   appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg')); // Only need one Tray icon
 });
 
