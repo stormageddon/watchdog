@@ -7,14 +7,9 @@
     </div>
 
     <script>
-      require('ipc').on('username', function(message) {
-        console.log(message);  // Prints the users name
-        document.getElementById("usernameTextField").value = message
-      });
-
       var updateSettings = function(e) {
         if (e.keyCode == 13) {
-          require('ipc').send('saveSettings', document.getElementById("usernameTextField").value);
+          require('ipc').send('saveSetup', document.getElementById("usernameTextField").value);
         }
       };
     </script>

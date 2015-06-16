@@ -27,6 +27,8 @@ var config = {};
 var configPath = __dirname;
 console.log('config path:',configPath);
 
+var setupWindow = {};
+
 var loadData = function(err, data) {
   if (!err) {
     config = JSON.parse(data);
@@ -48,9 +50,7 @@ var loadData = function(err, data) {
         message: "Welcome to Watchdog",
         detail: "Welcome to Watchdog! Before you can use it, you will need to set your username in the settings."
       };
-      streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
-      var setupUrl = "file:///" + __dirname + "/setup.html"
-      openSettings(setupUrl)
+      openSetup();
     }
   }
   else {
@@ -105,8 +105,10 @@ var contextMenu = {} // We don't want a new menu every time
 
 var tick = function() {
   console.log('tick:',username);
+  followed = [];
+  prevStreamers = [];  
+
   getFollowed(username, function() {
-    prevStreamers = [];
     for( var streamer in currStreamers ){
       prevStreamers.push(currStreamers[streamer].streamName);
     }
@@ -169,12 +171,38 @@ var openStream = function(streamer) {
 var dialog = require('dialog');
 var ipc = require('ipc');
 
-var openSettings = function(url) {
-  if (!streamWindow) {
+
+var openSetup = function() {
+  setupWindow = new BrowserWindow({ width: 800, height: 600, show: true });
+  var setupUrl = "file:///" + __dirname + "/setup.html"
+  setupWindow.loadUrl(setupUrl);
+
+  ipc.on('saveSetup', function(event, arg) {
+    console.log('data:',arg);
+    if (arg) {
+      username = arg;
+      config.user = username;
+      console.log('Writing to ' + configPath + '/config.json');
+      fs.writeFile(configPath + '/config.json', JSON.stringify(config), function(err) {
+        if (err) throw err;
+        console.log('Wrote config to file');
+      });
+      if (setupWindow != null) {
+	setupWindow.close();
+      }
+      setupWindow = null;
+      tick();
+    }
+  });
+}
+
+var openSettings = function() {
+  if (streamWindow == null) {
     streamWindow = new BrowserWindow({ width: 800, height: 600, show: true });
   }
-  var pageURL = url || "file:///" + __dirname + "/settings.html";
-
+  var pageURL = "file:///" + __dirname + "/settings.html";
+  console.log('stream window:',streamWindow);
+  console.log('pageURL',pageURL);
   streamWindow.loadUrl(pageURL);
   streamWindow.webContents.on('did-finish-load', function() {
     streamWindow.webContents.send('username', username);
@@ -190,7 +218,10 @@ var openSettings = function(url) {
         if (err) throw err;
         console.log('Wrote config to file');
       });
-      streamWindow.close();
+      if( streamWindow != null ) {
+	streamWindow.close();
+	streamWindow = null;
+      }
       tick();
     }
   });
