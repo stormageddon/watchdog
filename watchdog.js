@@ -24,8 +24,6 @@ var username = null;
 
 var minutes = .5, the_interval = minutes * 60 * 1000;
 var config = {};
-var configPath = __dirname;
-console.log('config path:',configPath);
 
 var setupWindow = {};
 
@@ -106,7 +104,7 @@ var contextMenu = {} // We don't want a new menu every time
 var tick = function() {
   console.log('tick:',username);
   followed = [];
-  prevStreamers = [];  
+  prevStreamers = [];
 
   getFollowed(username, function() {
     for( var streamer in currStreamers ){
@@ -182,8 +180,8 @@ var openSetup = function() {
     if (arg) {
       username = arg;
       config.user = username;
-      console.log('Writing to ' + configPath + '/config.json');
-      fs.writeFile(configPath + '/config.json', JSON.stringify(config), function(err) {
+      console.log('Writing to ' + path.join(__dirname, 'config.json'));
+      fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), function(err) {
         if (err) throw err;
         console.log('Wrote config to file');
       });
@@ -213,8 +211,8 @@ var openSettings = function() {
     if (arg) {
       username = arg;
       config.user = username;
-      console.log('Writing to ' + configPath + '/config.json');
-      fs.writeFile(configPath + '/config.json', JSON.stringify(config), function(err) {
+      console.log('Writing to ' + __dirname + '/config.json');
+      fs.writeFile(path.join(__dirname,'config.json'), JSON.stringify(config), function(err) {
         if (err) throw err;
         console.log('Wrote config to file');
       });
@@ -228,7 +226,7 @@ var openSettings = function() {
 }
 
 app.on('ready', function() {
-  fs.readFile(configPath + '/config.json', loadData);
+  fs.readFile(path.join(__dirname,'config.json'), loadData);
   appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg')); // Only need one Tray icon
 });
 
