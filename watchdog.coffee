@@ -59,7 +59,7 @@ getChannelStatus = (channel, callback)->
         console.log 'Error parsing json:', err
         stream = null
         callback(err)
-      currStreamers.push(channel) if stream
+      currStreamers.push(channel) if stream and currStreamers.indexOf(channel) == -1
       callback()
     else
       console.log 'error:',error
@@ -190,7 +190,7 @@ openSettings = ->
       streamWindow = null
       prevStreamers = []
       currStreamers = []
-
+      tick()
 
 app.on 'ready', ->
   console.log 'app is ready'
