@@ -190,6 +190,12 @@ var openSetup = function() {
       }
       setupWindow = null;
       tick();
+      setInterval(function() {
+	if(username != null) {
+	  tick();
+	}
+      }, the_interval);
+
     }
   });
 }
