@@ -9,6 +9,9 @@ async = require('async')
 path = require('path')
 exec = require('child_process').exec
 fs = require('fs')
+User = require('./models/user.js')
+Q = require('q')
+Channel = require('./models/channel.js')
 
 # Get a list of followed
 followed = []
@@ -19,7 +22,7 @@ prevStreamers = []
 # be closed automatically when the javascript object is GCed
 mainWindow = null
 appIcon = null
-username = null
+user = null
 minutes = .5
 the_interval = minutes * 60 * 1000
 config = {}
@@ -30,9 +33,11 @@ loadData = (err, data)->
     config = JSON.parse(data)
     username = config.user
     if username
+      user = new User(username)
+      console.log 'user:',user
       tick()
       setInterval( ->
-        tick() if username
+        tick() if user
       , the_interval)
     else
       openSetup()
@@ -68,27 +73,36 @@ getChannelStatus = (channel, callback)->
 contextMenu = {} # We don't want a new menu every time
 
 tick = ->
-  console.log 'tick:',username
-  followed = []
   prevStreamers = []
+  console.log 'user:',user
 
-  getFollowed username, ->
+  user.getFollowed().then (results)->
+    console.log 'Got async followed:',results
     prevStreamers = (streamer.streamName for streamer in currStreamers)
     currStreamers = []
-    async.each followed, getChannelStatus, (err)->
+    async.each results, (channel, callback)->
+      console.log 'async.each',channel,Channel
+      currChannel = new Channel(channel.streamName, channel.displayName)
+      console.log 'channel:',currChannel
+      currChannel.onlineStatus().then (stream)->
+        console.log 'stream:', stream if stream
+        currStreamers.push(stream) if stream
+        callback()
+    , (err)->
       if not err
         selectedStreamer = null
         labels = []
-        console.log 'currstreamers:',currStreamers.length
+        console.log 'currstreamers:',currStreamers.length, currStreamers
         for streamer in currStreamers
-           ((currStreamer)->
-             console.log 'the streamer label:',currStreamer
-             labels.push({
-               label: currStreamer.displayName
-               type: 'normal'
-               click: -> openStream(currStreamer)
-              })
-            )(streamer)
+          console.log 'STREAMER::', streamer
+          ((currStreamer)->
+            console.log 'the streamer label:',currStreamer.display_name
+            labels.push({
+              label: currStreamer.display_name
+              type: 'normal'
+              click: -> openStream(currStreamer)
+            })
+          )(streamer.channel)
 
         appIcon.setToolTip('Online streamers');
 
@@ -157,6 +171,8 @@ openSetup = ->
     if arg
       username = arg
       config.user = username
+      user = new User(username)
+      console.log 'new user:',user
       fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
         throw err if err
       )
@@ -183,6 +199,7 @@ openSettings = ->
     if arg
       username = arg
       config.user = username
+      user = new User(username)
       fs.writeFile(path.join(__dirname,'config.json'), JSON.stringify(config), (err)->
         throw err if err
       )
@@ -200,9 +217,10 @@ app.on 'ready', ->
 notifier = require('node-notifier')
 
 notifyNewStreamer = (streamer)->
+  console.log 'NOTIFY',streamer
   notifier.notify({
     title: 'Now Online'
-    message: streamer.displayName
+    message: streamer.channel.display_name
     icon: path.join(__dirname, 'img/dota2.png')
   })
 
@@ -210,6 +228,3 @@ close = ->
   streamWindow = null
   appIcon.destroy()
   process.exit(0)
-        
-
-      
