@@ -44,32 +44,6 @@ loadData = (err, data)->
   else
     console.log 'Error reading configuration:',err
 
-getFollowed = (user, cb)->
-  followed = []
-  request "https://api.twitch.tv/kraken/users/#{user}/follows/channels", (error, response, body)->
-    if not error
-      data = JSON.parse(body)
-      if data
-        followed = ({streamName:streamer.channel.name, displayName:streamer.channel.display_name} for streamer in data.follows)
-        cb()
-
-getChannelStatus = (channel, callback)->
-  console.log 'get channel status',channel, callback
-  request "https://api.twitch.tv/kraken/streams/#{channel.streamName}", (error, response, body)->
-    if not error
-      stream = {}
-      try
-        stream = JSON.parse(body).stream
-      catch err
-        console.log 'Error parsing json:', err
-        stream = null
-        callback(err)
-      currStreamers.push(channel) if stream and currStreamers.indexOf(channel) == -1
-      callback()
-    else
-      console.log 'error:',error
-      callback(error)
-
 contextMenu = {} # We don't want a new menu every time
 
 tick = ->
@@ -81,11 +55,8 @@ tick = ->
     prevStreamers = (streamer.streamName for streamer in currStreamers)
     currStreamers = []
     async.each results, (channel, callback)->
-      console.log 'async.each',channel,Channel
       currChannel = new Channel(channel.streamName, channel.displayName)
-      console.log 'channel:',currChannel
       currChannel.onlineStatus().then (stream)->
-        console.log 'stream:', stream if stream
         currStreamers.push(stream) if stream
         callback()
     , (err)->
@@ -100,7 +71,7 @@ tick = ->
             labels.push({
               label: currStreamer.display_name
               type: 'normal'
-              click: -> openStream(currStreamer)
+              click: -> openStream(currStreamer.name)
             })
           )(streamer.channel)
 
@@ -129,7 +100,7 @@ tick = ->
         labels.push({
           label: 'Quit'
           type: 'normal'
-          click: 'close'
+          click: close
         })
 
         console.log 'labels:',labels
@@ -149,7 +120,7 @@ streamWindow = null
 
 openStream = (streamer)->
   console.log 'open stream', streamer
-  exec("/usr/local/bin/livestreamer twitch.tv/#{streamer.streamName} best", (error, stdout, stderr)->
+  exec("/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
     console.log 'exec error: #{error}' if error
   )
 
@@ -192,7 +163,7 @@ openSettings = ->
   pageURL = path.join('file://',__dirname,'/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
-    streamWindow.webContents.send('username', username)
+    streamWindow.webContents.send('username', user.username)
   )
 
   ipc.on 'saveSettings', (event, arg)->
