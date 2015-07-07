@@ -146,6 +146,13 @@ openStream = (streamer)->
   console.log 'open stream', streamer
   exec("/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
     console.log 'exec error: #{error}' if error
+    errorWindow = new BrowserWindow({
+      width: 400
+      height: 300
+      show: true
+    })
+    errorUrl = path.join('file://', __dirname, 'error.html')
+    errorWindow.loadUrl(errorUrl)
   )
 
 dialog = require('dialog')
