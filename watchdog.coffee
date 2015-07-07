@@ -77,55 +77,17 @@ tick = ->
         appIcon.setToolTip('Online streamers');
 
         if currStreamers.length == 0
-          appIcon.setImage(path.join(__dirname, 'img/dota2_gray.jpg'))
+          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
           labels.push({
             label: 'No live streams'
             type: 'normal'
           })
         else
-          appIcon.setImage(path.join(__dirname, 'img/dota2.png'))
+          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Active.png'))
 
         console.log 'gameMap:',gameMap
 
-        # Create Menu
-        for key in Object.keys(gameMap)
-          gameMap[key].sort (a,b)->
-            return -1 if a.display_name < b.display_name
-            return 1 if a.display_name > b.display_name
-            0
-
-          labels.push({
-            label: key
-            enabled: false
-          })
-          for streamer in gameMap[key]
-            console.log 'llooping through streamer:',streamer
-            ((streamer)->
-              labels.push({
-                label: streamer.display_name
-                type: 'normal'
-                click: -> openStream(streamer.name)
-              })
-            )(streamer)
-          labels.push({
-            type: 'separator'
-          })
-
-        labels.push({
-          label: 'Settings'
-          type: 'normal'
-          click: openSettings
-        })
-
-        labels.push({
-          label: 'Quit'
-          type: 'normal'
-          click: close
-        })
-
-        console.log 'labels:',labels
-        contextMenu = Menu.buildFromTemplate(labels)
-        appIcon.setContextMenu(contextMenu)
+        createMenu(gameMap, labels)
 
         for streamer in currStreamers
           notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer)
@@ -137,6 +99,48 @@ streamerIsAlreadyOnline = (streamer)->
   prevStreamers.indexOf(streamer.streamName) > -1
 
 streamWindow = null
+
+createMenu = (gameMap, labels)->
+  # Create Menu
+  for key in Object.keys(gameMap)
+    gameMap[key].sort (a,b)->
+      return -1 if a.display_name < b.display_name
+      return 1 if a.display_name > b.display_name
+      0
+
+    labels.push({
+      label: key
+      enabled: false
+    })
+
+    for streamer in gameMap[key]
+      console.log 'llooping through streamer:',streamer
+      ((streamer)->
+        labels.push({
+          label: streamer.display_name
+          type: 'normal'
+          click: -> openStream(streamer.name)
+        })
+      )(streamer)
+    labels.push({
+      type: 'separator'
+    })
+
+  labels.push({
+    label: 'Settings'
+    type: 'normal'
+    click: openSettings
+  })
+
+  labels.push({
+    label: 'Quit'
+    type: 'normal'
+    click: close
+  })
+
+  console.log 'labels:',labels
+  contextMenu = Menu.buildFromTemplate(labels)
+  appIcon.setContextMenu(contextMenu)
 
 openStream = (streamer)->
   console.log 'open stream', streamer
@@ -203,7 +207,7 @@ openSettings = ->
 app.on 'ready', ->
   console.log 'app is ready'
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
-  appIcon = new Tray(path.join(__dirname, 'img/dota2_gray.jpg'))
+  appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
 
 notifier = require('node-notifier')
 
@@ -212,7 +216,7 @@ notifyNewStreamer = (streamer)->
   notifier.notify({
     title: 'Now Online'
     message: streamer.channel.display_name
-    icon: path.join(__dirname, 'img/dota2.png')
+    icon: path.join(__dirname, 'img/WatchDog-Menu-Active.png')
   })
 
 close = ->
