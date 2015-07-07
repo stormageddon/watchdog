@@ -151,7 +151,7 @@ openStream = (streamer)->
       height: 300
       show: true
     })
-    errorUrl = path.join('file://', __dirname, 'error.html')
+    errorUrl = path.join('file://', __dirname, '/views/error.html')
     errorWindow.loadUrl(errorUrl)
   )
 
@@ -165,7 +165,7 @@ openSetup = ->
     height: 600
     show: true
   })
-  setupUrl = path.join('file://', __dirname, 'setup.html')
+  setupUrl = path.join('file://', __dirname, '/views/setup.html')
   console.log 'setup url:',setupUrl
   setupWindow.loadUrl(setupUrl)
 
@@ -191,7 +191,7 @@ openSettings = ->
     height: 600
     show: true
   })
-  pageURL = path.join('file://',__dirname,'/settings.html')
+  pageURL = path.join('file://',__dirname,'/views/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
     streamWindow.webContents.send('username', user.username)
