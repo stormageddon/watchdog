@@ -6,6 +6,7 @@ Q = require('q')
 class Channel
   constructor: (@name, @displayName)->
     @stream = null
+    @currentGame = null
 
   onlineStatus: ->
     console.log 'getting status of channel'
@@ -16,6 +17,7 @@ class Channel
         try
           stream = JSON.parse(body).stream
           console.log 'resolving stream:',stream
+          @currentGame = stream.game if stream
           deferred.resolve(stream)
         catch err
           console.log 'Error parsing json:', err

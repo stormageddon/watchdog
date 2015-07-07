@@ -54,6 +54,9 @@ tick = ->
     console.log 'Got async followed:',results
     prevStreamers = (streamer.streamName for streamer in currStreamers)
     currStreamers = []
+    gameMap = {}
+    labels = []
+
     async.each results, (channel, callback)->
       currChannel = new Channel(channel.streamName, channel.displayName)
       currChannel.onlineStatus().then (stream)->
@@ -62,17 +65,13 @@ tick = ->
     , (err)->
       if not err
         selectedStreamer = null
-        labels = []
+
         console.log 'currstreamers:',currStreamers.length, currStreamers
         for streamer in currStreamers
           console.log 'STREAMER::', streamer
           ((currStreamer)->
-            console.log 'the streamer label:',currStreamer.display_name
-            labels.push({
-              label: currStreamer.display_name
-              type: 'normal'
-              click: -> openStream(currStreamer.name)
-            })
+            console.log 'the streamer label:',currStreamer.display_name, currStreamer.channel
+            if gameMap[currStreamer.game] then gameMap[currStreamer.game].push(currStreamer) else gameMap[currStreamer.game] = [currStreamer]
           )(streamer.channel)
 
         appIcon.setToolTip('Online streamers');
@@ -86,10 +85,26 @@ tick = ->
         else
           appIcon.setImage(path.join(__dirname, 'img/dota2.png'))
 
-        labels.push({
-          label: 'Commands'
-          type: 'separator'
-        });
+        console.log 'gameMap:',gameMap
+
+        # Create Menu
+        for key in Object.keys(gameMap)
+          labels.push({
+            label: key
+            enabled: false
+          })
+          for streamer in gameMap[key]
+            console.log 'llooping through streamer:',streamer
+            ((streamer)->
+              labels.push({
+                label: streamer.display_name
+                type: 'normal'
+                click: -> openStream(streamer.name)
+              })
+            )(streamer)
+          labels.push({
+            type: 'separator'
+          })
 
         labels.push({
           label: 'Settings'
