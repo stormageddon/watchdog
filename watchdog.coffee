@@ -89,6 +89,11 @@ tick = ->
 
         # Create Menu
         for key in Object.keys(gameMap)
+          gameMap[key].sort (a,b)->
+            return -1 if a.display_name < b.display_name
+            return 1 if a.display_name > b.display_name
+            0
+
           labels.push({
             label: key
             enabled: false
