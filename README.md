@@ -11,7 +11,7 @@ If you decide you would like to watch one of those streamers, you simply click t
 1. Avoid the hassle that is encountered when trying to use twitch. This means finding streamers and launching the stream without ever having to open a browser and navigating to twitch.tv
 2. Provide a clean, easy, and seemless process for viewing your favorite streamers.
 
-Note - This app is NOT a replacement for twitch. You'll still need an account and you'll still need to manage everything through Twitch. This just provides a simpler workflow for receiving notifications of your favorite streamers and then launching that particular stream.
+Note - This app is NOT a replacement for twitch. You'll still need an account and you'll still need to manage your followers and everything through Twitch. This just provides a simpler workflow for receiving notifications of your favorite streamers and then launching that particular stream.
 
 ## Installing Watchdog
 Watchdog requires that you have the following installed on your system:
@@ -22,20 +22,20 @@ Watchdog requires that you have the following installed on your system:
 
 If you do not have the above installed, please install those first.
 
-1. Clone the repository with `git clone git@github.com:stormageddon/watchdog.git`
-2. navigate into the watchdog project
-3. Run `npm install` to install the dependencies.
+Watchdog can be downloaded [here](http://stormageddon.github.io). Download the proper binary for your operating system and then run the Watchdog executable/application. That's all there is to it!
 
-You are now set to begin using Watchdog!
+## Developing for Watchdog
+The process hasn't been streamlined very well yet, but that's on the to-do list. The process below is what is currently necessary to build and run Watchdog yourself.
 
-## To run Watchdog
-Simply run `npm start <Your Twitch Username>` in the watchdog directory. It's really that easy!
-
-If you want to make it even easier to see who's online, you can create an alias within your .bashrc, .zshrc, or the config of whatever shell you use. The best way to alias watchdog is to begin running it in a separate shell by using the following alias command:
-
-`alias watchdog="(cd <path to watchdog root directory>; npm start <Your Twitch Username>)"`
-
-Then you can just run `watchdog` in your terminal and Watchdog will launch.
+1. Ensure the dependencies listed above are installed
+2. Clone the repository with `git clone git@github.com:stormageddon/watchdog.git`
+3. navigate into the watchdog project
+4. Run `npm install` to install the dependencies.
+5. Download the correct [Electron source code package](https://github.com/atom/electron/releases) for your system.
+6. Compile all of the .coffee files in Watchdog to .js files
+7. Rename `Watchdog` directory to `app`
+8. Copy `app` directory to your Electron installation directory (see Electrons [distribution docs](http://electron.atom.io/docs/v0.28.0/tutorial/application-distribution/) for where you should put the directory for your operating system)
+9. Now you should finally be able to run Watchdog
 
 ## Current status
-Watchdog is in the very early stages of development. At this point in time, all it will do is display a list of the channels that you watch that are currently streaming. It also displays a notification if another of your followed streamers begins streaming.
+Watchdog is in the very early stages of development.
