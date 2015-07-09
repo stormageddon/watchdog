@@ -34,7 +34,6 @@ loadData = (err, data)->
     username = config.user
     if username
       user = new User(username)
-      console.log 'user:',user
       tick()
       setInterval( ->
         tick() if user
@@ -48,11 +47,10 @@ contextMenu = {} # We don't want a new menu every time
 
 tick = ->
   prevStreamers = []
-  console.log 'user:',user
 
   user.getFollowed().then (results)->
-    console.log 'Got async followed:',results
-    prevStreamers = (streamer.streamName for streamer in currStreamers)
+    console.log 'currStreamers:',currStreamers
+    prevStreamers = (streamer.channel.name for streamer in currStreamers)
     currStreamers = []
     gameMap = {}
     labels = []
@@ -60,6 +58,7 @@ tick = ->
     async.each results, (channel, callback)->
       currChannel = new Channel(channel.streamName, channel.displayName)
       currChannel.onlineStatus().then (stream)->
+        console.log 'THE STREAM:::',stream
         currStreamers.push(stream) if stream
         callback()
     , (err)->
@@ -96,7 +95,7 @@ tick = ->
 
 streamerIsAlreadyOnline = (streamer)->
   console.log 'checking streamer:',streamer,prevStreamers,prevStreamers.indexOf(streamer.streamName) is not -1
-  prevStreamers.indexOf(streamer.streamName) > -1
+  prevStreamers.indexOf(streamer.channel.name) > -1
 
 streamWindow = null
 
@@ -114,7 +113,6 @@ createMenu = (gameMap, labels)->
     })
 
     for streamer in gameMap[key]
-      console.log 'llooping through streamer:',streamer
       ((streamer)->
         labels.push({
           label: streamer.display_name
@@ -138,14 +136,12 @@ createMenu = (gameMap, labels)->
     click: close
   })
 
-  console.log 'labels:',labels
   contextMenu = Menu.buildFromTemplate(labels)
   appIcon.setContextMenu(contextMenu)
 
 openStream = (streamer)->
-  console.log 'open stream', streamer
   exec("/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
-    console.log 'exec error: #{error}' if error
+    console.log "exec error: #{@error}" if error
     errorWindow = new BrowserWindow({
       width: 400
       height: 300
@@ -159,14 +155,12 @@ dialog = require('dialog')
 ipc = require('ipc')
 
 openSetup = ->
-  console.log 'open setup'
   setupWindow = new BrowserWindow({
     width: 800
     height: 600
     show: true
   })
   setupUrl = path.join('file://', __dirname, '/views/setup.html')
-  console.log 'setup url:',setupUrl
   setupWindow.loadUrl(setupUrl)
 
   ipc.on 'saveSetup', (event, arg)->
@@ -174,7 +168,6 @@ openSetup = ->
       username = arg
       config.user = username
       user = new User(username)
-      console.log 'new user:',user
       fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
         throw err if err
       )
@@ -212,7 +205,6 @@ openSettings = ->
       tick()
 
 app.on 'ready', ->
-  console.log 'app is ready'
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
 
