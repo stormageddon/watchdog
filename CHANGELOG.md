@@ -1,3 +1,14 @@
+# 0.1.3 (UNRELEASED)
+
+## Bug Fixes
+
+- Fixed error message being displayed everytime a stream was closed
+
+## Features
+
+- Added build information on the settings page. Will display last updated date and current version for easier debugging
+- Added a simple loading screen for launching a stream
+
 # 0.1.2 (07-09-15)
 
 ## Bug Fixes

@@ -3,7 +3,7 @@
 # Watchdog Media
 # 2015
 #
-
+pkg = require('./package.json')
 app = require('app')
 BrowserWindow = require('browser-window')
 Menu = require('menu')
@@ -16,6 +16,10 @@ fs = require('fs')
 User = require('./models/user.js')
 Q = require('q')
 Channel = require('./models/channel.js')
+
+# Watchdog Settings
+version = pkg.version
+console.log 'Running version',version
 
 # Get a list of followed
 followed = []
@@ -144,16 +148,23 @@ createMenu = (gameMap, labels)->
   appIcon.setContextMenu(contextMenu)
 
 openStream = (streamer)->
-  exec("/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
-    console.log "exec error: #{@error}" if error
-    errorWindow = new BrowserWindow({
-      width: 400
-      height: 300
-      show: true
-    })
-    errorUrl = path.join('file://', __dirname, '/views/error.html')
-    errorWindow.loadUrl(errorUrl)
-  )
+  loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true});
+  loadingSplash.loadUrl(path.join('file://', __dirname, '/views/loading.html'))
+
+  setTimeout( ->
+    loadingSplash.destroy();
+  , 3000)
+
+  exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
+      console.log "exec error: #{@error}" if error
+      if error
+        errorWindow = new BrowserWindow({
+          width: 400
+          height: 300
+          show: true
+        })
+        errorUrl = path.join('file://', __dirname, '/views/error.html')
+        errorWindow.loadUrl(errorUrl)
 
 dialog = require('dialog')
 ipc = require('ipc')
@@ -191,7 +202,7 @@ openSettings = ->
   pageURL = path.join('file://',__dirname,'/views/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
-    streamWindow.webContents.send('username', user.username)
+    streamWindow.webContents.send('settingsData', {username: user.username, version: version})
   )
 
   ipc.on 'saveSettings', (event, arg)->

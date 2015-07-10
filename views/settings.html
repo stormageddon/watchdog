@@ -1,13 +1,23 @@
 <html>
   <body>
-    <p>This is a horrible settings page</p>
-    <p>Current User: <input type="text" id="usernameTextField"></input></p>
-    <button onClick="updateSettings()">Save settings</button>
+    <div>
+      <h2>User Settings</h2>
+      <p>Current User: <input type="text" id="usernameTextField"></input></p>
+      <button onClick="updateSettings()">Save settings</button>
+    </div>
+    <div>
+      <h2>Build information</h2>
+      <p> Version: <code id="versionNumber">This is code</code></p>
+      <p> Build: <code id="buildNumber"></code></p>
+      <p> Last updated: <code id="lastUpdated"></code></p>
+    </div>
+
 
     <script>
-      require('ipc').on('username', function(message) {
-        console.log(message);  // Prints the users name
-        document.getElementById("usernameTextField").value = message
+      require('ipc').on('settingsData', function(message) {
+        console.log(message);
+        document.getElementById("usernameTextField").value = message.username;
+        document.getElementById("versionNumber").innerHTML = message.version;
       });
 
       var updateSettings = function() {
