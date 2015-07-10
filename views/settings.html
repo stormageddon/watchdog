@@ -18,6 +18,8 @@
         console.log(message);
         document.getElementById("usernameTextField").value = message.username;
         document.getElementById("versionNumber").innerHTML = message.version;
+        var lastUpdated = new Date(message.lastUpdate);     
+        document.getElementById("lastUpdated").innerHTML = lastUpdated.toLocaleString("en-US");
       });
 
       var updateSettings = function() {

@@ -182,6 +182,8 @@ openSetup = ->
     if arg
       username = arg
       config.user = username
+      config.lastUpdate = Date.now()
+      console.log 'setting config: ',config
       user = new User(username)
       fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
         throw err if err
@@ -202,7 +204,7 @@ openSettings = ->
   pageURL = path.join('file://',__dirname,'/views/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
-    streamWindow.webContents.send('settingsData', {username: user.username, version: version})
+    streamWindow.webContents.send('settingsData', {username: user.username, version: version, lastUpdate: config.lastUpdate})
   )
 
   ipc.on 'saveSettings', (event, arg)->
