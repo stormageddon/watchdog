@@ -156,7 +156,7 @@ openStream = (streamer)->
   , 3000)
 
   exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
-      console.log "exec error: #{@error}" if error
+      console.log "exec error: #{error}" if error
       if error
         errorWindow = new BrowserWindow({
           width: 400
