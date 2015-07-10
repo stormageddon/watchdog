@@ -158,13 +158,16 @@ openStream = (streamer)->
   exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
       console.log "exec error: #{error}" if error
       if error
-        errorWindow = new BrowserWindow({
-          width: 400
-          height: 300
-          show: true
-        })
-        errorUrl = path.join('file://', __dirname, '/views/error.html')
-        errorWindow.loadUrl(errorUrl)
+        # Hacky way to try again with Livestreamer on path (mostly for windows)
+        exec "livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
+          if error #display error if it is still failing
+            errorWindow = new BrowserWindow({
+              width: 400
+              height: 300
+              show: true
+            })
+            errorUrl = path.join('file://', __dirname, '/views/error.html')
+            errorWindow.loadUrl(errorUrl)
 
 dialog = require('dialog')
 ipc = require('ipc')
