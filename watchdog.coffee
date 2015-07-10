@@ -1,4 +1,8 @@
 'use strict'
+#
+# Watchdog Media
+# 2015
+#
 
 app = require('app')
 BrowserWindow = require('browser-window')
