@@ -7,15 +7,14 @@
     "async": "^1.2.0",
     "jquery": "^2.1.4",
     "node-notifier": "^4.2.1",
+    "q": "^1.4.1",
     "request": "^2.57.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron watchdog.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Michael Caputo",
   "license": "MIT"
-
 }
