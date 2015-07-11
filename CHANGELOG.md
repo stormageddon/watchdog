@@ -5,6 +5,7 @@
 - Fixed error message being displayed everytime a stream was closed
 - Tries to launch livestreamer in a Mac and Windows friendly way now
 - Display Watchdog app as notifications title icon
+- Only display one icon in notifications
 
 ## Features
 
