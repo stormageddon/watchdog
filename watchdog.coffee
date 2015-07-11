@@ -236,6 +236,7 @@ notifyNewStreamer = (streamer)->
     title: 'Now Online'
     message: streamer.channel.display_name
     icon: path.join(__dirname, 'img/WatchDog-Menu-Active.png')
+    sender: 'com.github.electron'
   })
 
 close = ->
