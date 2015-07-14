@@ -57,6 +57,7 @@ tick = ->
   prevStreamers = []
 
   user.getFollowed().then (results)->
+    console.log 'results:',results
     console.log 'currStreamers:',currStreamers
     prevStreamers = (streamer.channel.name for streamer in currStreamers)
     currStreamers = []
@@ -100,6 +101,8 @@ tick = ->
           notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer)
       else
         console.log 'an error!',err
+  , (error)->
+    console.log 'error was thrown:', error
 
 streamerIsAlreadyOnline = (streamer)->
   console.log 'checking streamer:',streamer,prevStreamers,prevStreamers.indexOf(streamer.streamName) is not -1
@@ -212,17 +215,28 @@ openSettings = ->
 
   ipc.on 'saveSettings', (event, arg)->
     if arg
-      username = arg
-      config.user = username
-      user = new User(username)
-      fs.writeFile(path.join(__dirname,'config.json'), JSON.stringify(config), (err)->
-        throw err if err
-      )
-      streamWindow.close() if streamWindow
-      streamWindow = null
+
+      newUser = new User(arg)
       prevStreamers = []
       currStreamers = []
-      tick()
+
+      newUser.getFollowed().then (data)->
+        username = arg
+        config.user = username
+        user = newUser
+        streamWindow.close() if streamWindow
+        streamWindow = null
+
+        fs.writeFile path.join(__dirname,'config.json'), JSON.stringify(config), (err)->
+          throw err if err
+
+        tick()
+      , (error)->
+        console.log "User fetch error",error
+
+        streamWindow.webContents.send('error', error.message) if error.status is 404
+    else
+      streamWindow.webContents.send('error', 'Username is required')
 
 app.on 'ready', ->
   fs.readFile(path.join(__dirname, 'config.json'), loadData)

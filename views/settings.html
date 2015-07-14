@@ -1,7 +1,11 @@
 <html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../css/main.css" media="screen" />
+  </head>
   <body>
     <div>
       <h2>User Settings</h2>
+      <p class="error" id="errorField"></p>
       <p>Current User: <input type="text" id="usernameTextField"></input></p>
       <button onClick="updateSettings()">Save settings</button>
     </div>
@@ -20,6 +24,11 @@
         document.getElementById("versionNumber").innerHTML = message.version;
         var lastUpdated = new Date(message.lastUpdate);     
         document.getElementById("lastUpdated").innerHTML = lastUpdated.toLocaleString("en-US");
+      });
+
+      require('ipc').on('error', function(errorMessage) {
+        document.getElementById("usernameTextField").value = '';      
+        document.getElementById("errorField").innerHTML = errorMessage;
       });
 
       var updateSettings = function() {

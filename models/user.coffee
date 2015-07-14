@@ -15,8 +15,11 @@ class User
         data = JSON.parse(body)
         console.log 'data:',data
         if data
-          @followed = ({streamName:streamer.channel.name, displayName:streamer.channel.display_name} for streamer in data.follows)
-          deferred.resolve(@followed)
+          if not data.error
+            @followed = ({streamName:streamer.channel.name, displayName:streamer.channel.display_name} for streamer in data.follows)
+            deferred.resolve(@followed)
+          else
+            deferred.reject(data)
       else
         deferred.reject(new Error(error))
     return deferred.promise
