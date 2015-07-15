@@ -3,6 +3,8 @@
 ## Bug Fixes
 
 - Only display one icon in notifications
+- Error checking for when a user entered on startup or in settings doesn't exist
+- Loading screen when launching a stream is now more closely tied to what Livestreamer is doing
 
 # 0.1.3 (07-10-15)
 
