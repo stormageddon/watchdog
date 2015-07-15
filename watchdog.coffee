@@ -154,11 +154,7 @@ openStream = (streamer)->
   loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true});
   loadingSplash.loadUrl(path.join('file://', __dirname, '/views/loading.html'))
 
-  setTimeout( ->
-    loadingSplash.destroy();
-  , 3000)
-
-  exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
+  child = exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
       console.log "exec error: #{error}" if error
       if error
         # Hacky way to try again with Livestreamer on path (mostly for windows)
@@ -171,6 +167,7 @@ openStream = (streamer)->
             })
             errorUrl = path.join('file://', __dirname, '/views/error.html')
             errorWindow.loadUrl(errorUrl)
+  child.stdout.on 'data', (data) -> loadingSplash.destroy() if data.toString().includes('Starting player')
 
 dialog = require('dialog')
 ipc = require('ipc')
@@ -186,20 +183,26 @@ openSetup = ->
 
   ipc.on 'saveSetup', (event, arg)->
     if arg
-      username = arg
-      config.user = username
-      config.lastUpdate = Date.now()
-      console.log 'setting config: ',config
-      user = new User(username)
-      fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
-        throw err if err
-      )
-      setupWindow.close() if setupWindow
-      setupWindow = null
-      tick()
-      setInterval( ->
-        tick() if username
-      , the_interval)
+      newUser = new User(arg)
+      newUser.getFollowed().then (data)->
+        user = newUser
+        username = arg
+        config.user = username
+        config.lastUpdate = Date.now()
+        console.log 'setting config: ',config
+        fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
+          throw err if err
+        )
+        setupWindow.close() if setupWindow
+        setupWindow = null
+        tick()
+        setInterval( ->
+          tick() if username
+        , the_interval)
+      , (error)->
+        setupWindow.webContents.send('error', error.message) if error.status is 404
+    else
+      setupWindow.webContents.send('error', 'Username is required')
 
 openSettings = ->
   streamWindow = new BrowserWindow({
