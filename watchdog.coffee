@@ -255,12 +255,16 @@ app.on 'ready', ->
 
   require('events').EventEmitter
 
-  autoUpdater.setFeedUrl('http://localhost:3498/latest?version=1.0.0')
+  autoUpdater.setFeedUrl("http://localhost:3498/latest?version=#{version}")
 
 
   autoUpdater.checkForUpdates()
   autoUpdater.on 'error', ->
     console.log 'arguments:',arguments
+  autoUpdater.on 'update-available', ->
+    console.log 'Update available!'
+  autoUpdater.on 'update-not-available', ->
+    console.log 'No update available'
 
 notifier = require('node-notifier')
 
