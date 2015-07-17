@@ -1,4 +1,4 @@
-# 0.1.4 (UNRELEASED)
+# 0.1.4 (07-17-15)
 
 ## Bug Fixes
 
@@ -6,6 +6,12 @@
 - Error checking for when a user entered on startup or in settings doesn't exist
 - Loading screen when launching a stream is now more closely tied to what Livestreamer is doing
 - Fix parsing bug when fetching followed streams
+- Fixed input color on setup screen
+
+## Features
+
+- Added a menu option that checks to see if there is an update that can be downloaded.
+
 
 # 0.1.3 (07-10-15)
 
