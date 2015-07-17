@@ -17,6 +17,7 @@ User = require('./models/user.js')
 Q = require('q')
 Channel = require('./models/channel.js')
 autoUpdater = require('auto-updater')
+open = require('open')
 
 # Watchdog Settings
 version = pkg.version
@@ -155,8 +156,29 @@ createMenu = (gameMap, labels)->
     click: close
   })
 
+  labels.push({
+    type: 'separator'
+  })
+
+  labels.push({
+    label: 'Update available!'
+    type: 'normal'
+    click: openUpdate
+  }) if isOutdated
+
+  labels.push({
+    label: 'Watchdog is up to date'
+    enabled: false
+  }) if not isOutdated
+
   contextMenu = Menu.buildFromTemplate(labels)
   appIcon.setContextMenu(contextMenu)
+
+isOutdated = false
+
+openUpdate = ->
+  open 'http://stormageddon.github.io', (err)->
+    console.log 'an error:',err
 
 openStream = (streamer)->
   loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true});
@@ -255,16 +277,17 @@ app.on 'ready', ->
 
   require('events').EventEmitter
 
-  autoUpdater.setFeedUrl("http://localhost:3498/latest?version=#{version}")
+  request "http://localhost:3498/latest?version=#{version}", (error, response, body)->
+    if not error
+      try
+        data = JSON.parse(body)
+        console.log 'data:',data
+        if data.statusCode is 200
+          isOutdated = true
 
 
-  autoUpdater.checkForUpdates()
-  autoUpdater.on 'error', ->
-    console.log 'arguments:',arguments
-  autoUpdater.on 'update-available', ->
-    console.log 'Update available!'
-  autoUpdater.on 'update-not-available', ->
-    console.log 'No update available'
+
+
 
 notifier = require('node-notifier')
 
@@ -279,4 +302,4 @@ notifyNewStreamer = (streamer)->
 close = ->
   streamWindow = null
   appIcon.destroy()
-  process.exit(0)
+  app.quit()
