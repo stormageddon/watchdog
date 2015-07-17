@@ -272,6 +272,8 @@ openSettings = ->
       streamWindow.webContents.send('error', 'Username is required')
 
 app.on 'ready', ->
+  console.log 'app:',app.dock
+  app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
 
