@@ -181,7 +181,7 @@ openUpdate = ->
     console.log 'an error:',err
 
 openStream = (streamer)->
-  loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true});
+  loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true, frame: false});
   loadingSplash.loadUrl(path.join('file://', __dirname, '/views/loading.html'))
 
   child = exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
