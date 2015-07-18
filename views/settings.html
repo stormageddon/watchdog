@@ -3,19 +3,22 @@
     <link rel="stylesheet" type="text/css" href="../css/main.css" media="screen" />
   </head>
   <body>
-    <div>
-      <h2>User Settings</h2>
-      <p class="error" id="errorField"></p>
-      <p>Current User: <input type="text" id="usernameTextField"></input></p>
-      <button onClick="updateSettings()">Save settings</button>
+    <div width="64" height="300" style="float: left; vertical-align: top;">
+      <img src="../img/watchdog-icon.png" width="64" height="64" style="margin-top: auto; margin-bottom: auto;">
     </div>
-    <div>
-      <h2>Build information</h2>
-      <p> Version: <code id="versionNumber">This is code</code></p>
-      <p> Build: <code id="buildNumber"></code></p>
-      <p> Last updated: <code id="lastUpdated"></code></p>
+    <div width="536" height="300" style="float: right;">
+      <p>Watchdog is now running. You can find it's icon in your menu bar.</p>
+      <div>
+	<p class="error" id="errorField"></p>
+	<p>Current User: <input type="text" id="usernameTextField"></input></p>
+	<button onClick="updateSettings()">Save settings</button>
+      </div>
+      <div>
+	<p> Version: <code id="versionNumber">This is code</code></p>
+	<p> Build: <code id="buildNumber"></code></p>
+	<p> Last updated: <code id="lastUpdated"></code></p>
+      </div>
     </div>
-
 
     <script>
       require('ipc').on('settingsData', function(message) {
