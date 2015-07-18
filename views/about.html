@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../css/main.css" media="screen" />
+  </head>
+  <body style="text-align: center">
+    <img src="../img/watchdog-icon.png" width="64" height="64" style="margin-top: auto; margin-bottom: auto;">
+    <p> Version: <code id="versionNumber"></code></p>
+    <p>Get updates on your favorite Twitch streamers right from the desktop.</p>
+    <p>Application and menu bar icons by Tal Rosenbaum.</p>
+    <a href="stormageddon.github.io">Watchdog home</a>
+    <p>&copy; Watchdog Media, 2015</p>
+
+    <script>
+      require('ipc').on('versionData', function(message) {
+        console.log('message:' + message)
+        document.getElementById("versionNumber").innerHTML = message.version;
+      });
+    </script>
+  </body>
+</html>

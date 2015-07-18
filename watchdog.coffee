@@ -145,9 +145,15 @@ createMenu = (gameMap, labels)->
     })
 
   labels.push({
-    label: 'Settings'
+    label: 'Preferences'
     type: 'normal'
     click: openSettings
+  })
+
+  labels.push({
+    label: 'About'
+    type: 'normal'
+    click: openAbout
   })
 
   labels.push({
@@ -179,6 +185,13 @@ isOutdated = false
 openUpdate = ->
   open 'http://stormageddon.github.io', (err)->
     console.log 'an error:',err
+
+openAbout = ->
+  console.log 'VERSION:',version
+  aboutWindow = new BrowserWindow({ width: 400, height: 300, show: true, center: true })
+  aboutWindow.loadUrl(path.join('file://', __dirname, '/views/about.html'))
+  aboutWindow.webContents.on 'did-finish-load', ->
+    aboutWindow.webContents.send('versionData', {version: version})
 
 openStream = (streamer)->
   loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true, frame: false});
