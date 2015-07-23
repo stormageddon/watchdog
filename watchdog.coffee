@@ -97,7 +97,11 @@ tick = ->
           appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
           labels.push({
             label: 'No live streams'
-            type: 'normal'
+            enabled: false
+          })
+
+          labels.push({
+            type: 'separator'
           })
         else
           appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Active.png'))
