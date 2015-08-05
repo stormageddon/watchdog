@@ -296,13 +296,14 @@ app.on 'ready', ->
 
   require('events').EventEmitter
 
-  request "http://localhost:3498/latest?version=#{version}", (error, response, body)->
+  request "http://168.235.69.244:3498/latest?version=#{version}", (error, response, body)->
     if not error
       try
         data = JSON.parse(body)
         console.log 'data:',data
         if data.statusCode is 200
           isOutdated = true
+    console.log 'error fetching version:',error if error
 
 
 
