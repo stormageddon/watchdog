@@ -1,3 +1,11 @@
+# 0.1.5 (08-06-15)
+
+## Build Changes
+
+There is a new build process for developing in Watchdog. You can now simply run `make run` in the root directory of Watchdog. This will run a bunch of grunt tasks that will do all the work required to build a Watchdog.app file in the dist/ directory. With this release, the new build process will only work for the OS X build. This will be updated in the future to automatically build the Windows and Linux apps as well.
+
+Along with this new build process, the overall architecture of the Watchdog has changed. All of the major app code is now contained in the `watchdog\app` directory.
+
 # 0.1.4 (07-17-15)
 
 ## Bug Fixes

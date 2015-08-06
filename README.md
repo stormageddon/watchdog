@@ -25,17 +25,14 @@ If you do not have the above installed, please install those first.
 Watchdog can be downloaded [here](http://stormageddon.github.io). Download the proper binary for your operating system and then run the Watchdog executable/application. That's all there is to it!
 
 ## Developing for Watchdog
-The process hasn't been streamlined very well yet, but that's on the to-do list. The process below is what is currently necessary to build and run Watchdog yourself.
+The build process for Watchdog is currently only streamlined for building Watchdog for use on a Mac. For alternate OS builds, follow Electrons suggested build process.
 
 1. Ensure the dependencies listed above are installed
 2. Clone the repository with `git clone git@github.com:stormageddon/watchdog.git`
 3. navigate into the watchdog project
 4. Run `npm install` to install the dependencies.
-5. Download the correct [Electron source code package](https://github.com/atom/electron/releases) for your system.
-6. Compile all of the .coffee files in Watchdog to .js files
-7. Rename `Watchdog` directory to `app`
-8. Copy `app` directory to your Electron installation directory (see Electrons [distribution docs](http://electron.atom.io/docs/v0.28.0/tutorial/application-distribution/) for where you should put the directory for your operating system)
-9. Now you should finally be able to run Watchdog
+5. Run `make run` to build the Watchdog project into the `watchdog\dist` directory
+6. Run Watchdog.app
 
 ## Current status
 Watchdog is in the very early stages of development.

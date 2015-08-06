@@ -1,6 +1,6 @@
 {
   "name": "watchdog",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A simple utility to list all of the twitch users followed streamers that are online.",
   "main": "watchdog.js",
   "dependencies": {
@@ -21,7 +21,6 @@
     "grunt-electron": "^2.0.0"
   },
   "scripts": {
-    "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron watchdog.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Michael Caputo",
