@@ -40,12 +40,6 @@ setupWindow = {}
 
 
 loadData = (err, data)->
-  #check for update
-#  request "http://localhost:3498/latest?version=0.1.4", (error, response, body)->
-#    if not error
-#      console.log 'response:',JSON.parse(body)
-#    else
-#      console.log 'error:',error
   if not err
     config = JSON.parse(data)
     username = config.user
