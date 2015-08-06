@@ -58,12 +58,6 @@ module.exports = (grunt)->
             src: ['**/*']
             dest: '_app/node_modules'
           }
-          {
-            expand: yes
-            cwd: './lib'
-            src: ['*']
-            dest: '_app/lib'
-          }
         ]
     electron:
       osxBuild:
