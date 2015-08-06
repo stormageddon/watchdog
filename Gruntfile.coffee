@@ -14,7 +14,7 @@ module.exports = (grunt)->
         dest: '_app/'
         ext: '.js'
     copy:
-      images:
+      all:
         files: [
           {
             expand: yes
@@ -57,6 +57,12 @@ module.exports = (grunt)->
             cwd: './node_modules'
             src: ['**/*']
             dest: '_app/node_modules'
+          }
+          {
+            expand: yes
+            cwd: './lib'
+            src: ['*']
+            dest: '_app/lib'
           }
         ]
     electron:
