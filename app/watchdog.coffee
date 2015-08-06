@@ -195,7 +195,7 @@ openStream = (streamer)->
   loadingSplash = new BrowserWindow({ width: 400, height: 300, show: true, type: 'splash', center: true, frame: false});
   loadingSplash.loadUrl(path.join('file://', __dirname, '/views/loading.html'))
 
-  child = exec "../lib/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
+  child = exec "/usr/local/bin/livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
       console.log "exec error: #{error}" if error
       if error
         # Hacky way to try again with Livestreamer on path (mostly for windows)
