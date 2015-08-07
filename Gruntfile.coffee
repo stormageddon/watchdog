@@ -75,11 +75,7 @@ module.exports = (grunt)->
       notificationTarget:
         src: ['_app/node_modules/node-notifier/vendor/terminal-notifier.app/Contents/MacOS/*']
 
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-electron'
-  grunt.loadNpmTasks 'grunt-chmod'
+  require('load-grunt-tasks')(grunt)
   grunt.registerTask 'compile', [
     'coffee'
     'copy'
