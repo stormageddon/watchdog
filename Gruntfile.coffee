@@ -54,6 +54,7 @@ module.exports = (grunt)->
           }
           {
             expand: yes
+            mode: yes
             cwd: './node_modules'
             src: ['**/*']
             dest: '_app/node_modules'
@@ -65,16 +66,24 @@ module.exports = (grunt)->
           name: 'Watchdog'
           dir: '_app'
           out: 'dist'
-          version: '0.30.2'
+          version: '0.28.0'
           platform: 'darwin'
           arch: 'x64'
+    chmod:
+      options:
+        mode: '755'
+      notificationTarget:
+        src: ['_app/node_modules/node-notifier/vendor/terminal-notifier.app/Contents/MacOS/*']
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-electron'
+  grunt.loadNpmTasks 'grunt-chmod'
   grunt.registerTask 'compile', [
     'coffee'
     'copy'
+    'chmod'
     'electron'
+
   ]

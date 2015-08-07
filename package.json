@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "electron-packager": "^5.0.1",
+    "grunt-chmod": "^1.0.3",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-electron": "^2.0.0"
   },

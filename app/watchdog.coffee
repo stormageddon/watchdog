@@ -299,19 +299,19 @@ app.on 'ready', ->
           isOutdated = true
     console.log 'error fetching version:',error if error
 
-
-
-
-
 notifier = require('node-notifier')
 
 notifyNewStreamer = (streamer)->
-  console.log 'NOTIFY',streamer
-  notifier.notify({
+  console.log 'NOTIFY',streamer.channel.display_name
+  console.log 'notifier:',notifier
+  notifier.notify( {
     title: 'Now Online'
     message: streamer.channel.display_name
     sender: 'com.github.electron'
-  })
+  }, (err)->
+    console.log 'err:',err
+  )
+
 
 close = ->
   streamWindow = null
