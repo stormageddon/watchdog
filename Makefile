@@ -1,4 +1,4 @@
-run:
+compile:
 	$(MAKE) clean
 	./node_modules/grunt-cli/bin/grunt compile
 
