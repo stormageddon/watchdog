@@ -66,7 +66,7 @@ module.exports = (grunt)->
           name: 'Watchdog'
           dir: '_app'
           out: 'dist'
-          version: '0.28.0'
+          version: '0.30.2'
           platform: 'darwin'
           arch: 'x64'
     chmod:
