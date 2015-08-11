@@ -117,7 +117,7 @@ streamerIsAlreadyOnline = (streamer)->
 
 streamWindow = null
 
-createMenu = (gameMap, labels)->
+createMenu = (gameMap = {}, labels = [])->
   # Create Menu
   for key in Object.keys(gameMap)
     gameMap[key].sort (a,b)->
@@ -288,6 +288,7 @@ app.on 'ready', ->
   app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
+  createMenu() # Create an empty menu immediately
 
   require('events').EventEmitter
 
