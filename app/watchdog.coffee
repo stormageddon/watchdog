@@ -208,6 +208,7 @@ openStream = (streamer)->
             })
             errorUrl = path.join('file://', __dirname, '/views/error.html')
             errorWindow.loadUrl(errorUrl)
+            loadingSplays.destroy()
   child.stdout.on 'data', (data) -> loadingSplash.destroy() if data.toString().includes('Starting player')
 
 dialog = require('dialog')
