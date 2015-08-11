@@ -69,6 +69,14 @@ module.exports = (grunt)->
           version: '0.30.2'
           platform: 'darwin'
           arch: 'x64'
+      windowsBuild:
+        options:
+          name: 'Watchdog'
+          dir: '_app'
+          out: 'dist'
+          version: '0.30.2'
+          platform: 'win32'
+          arch: 'all'
     chmod:
       options:
         mode: '755'
@@ -81,5 +89,4 @@ module.exports = (grunt)->
     'copy'
     'chmod'
     'electron'
-
   ]
