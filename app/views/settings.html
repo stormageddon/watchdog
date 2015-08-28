@@ -11,6 +11,7 @@
       <div>
 	<p class="error" id="errorField"></p>
 	<p>Current User: <input type="text" id="usernameTextField"></input></p>
+	<input type="checkbox" id="notify" name="notify" checked="true"></input>
 	<button onClick="updateSettings()">Save settings</button>
       </div>
       <div>
@@ -25,6 +26,7 @@
         console.log(message);
         document.getElementById("usernameTextField").value = message.username;
         document.getElementById("versionNumber").innerHTML = message.version;
+        document.getElementById("notify").checked = message.shouldNotify;
         var lastUpdated = new Date(message.lastUpdate);     
         document.getElementById("lastUpdated").innerHTML = lastUpdated.toLocaleString("en-US");
       });
@@ -36,7 +38,7 @@
 
       var updateSettings = function() {
         alert('We will now fetch the streamers that ' + document.getElementById("usernameTextField").value + ' follows! Please give us a few seconds to get the data...');
-        require('ipc').send('saveSettings', document.getElementById("usernameTextField").value);
+        require('ipc').send('saveSettings', {username: document.getElementById("usernameTextField").value, notify: document.getElementById("notify").checked});
       };
     </script>
   </body>

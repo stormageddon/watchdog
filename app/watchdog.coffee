@@ -37,12 +37,16 @@ minutes = .5
 the_interval = minutes * 60 * 1000
 config = {}
 setupWindow = {}
-
+shouldNotify = true
 
 loadData = (err, data)->
   if not err
     config = JSON.parse(data)
     username = config.user
+
+    shouldNotify = config.shouldNotify if config.shouldNotify
+    console.log "should notify: #{shouldNotify}"
+
     if username
       user = new User(username)
       tick()
@@ -67,12 +71,13 @@ tick = ->
     gameMap = {}
     labels = []
 
-    async.each results, (channel, callback)->
+    async.each results, (channel, callback)=>
       currChannel = new Channel(channel.streamName, channel.displayName)
       currChannel.onlineStatus().then (stream)->
         console.log 'THE STREAM:::',stream
         currStreamers.push(stream) if stream
         callback()
+        return
     , (err)->
       if not err
         selectedStreamer = null
@@ -84,7 +89,7 @@ tick = ->
             console.log 'the streamer label:',currStreamer.display_name, currStreamer.channel
             if gameMap[currStreamer.game] then gameMap[currStreamer.game].push(currStreamer) else gameMap[currStreamer.game] = [currStreamer]
           )(streamer.channel)
-
+        console.log 'Constructed map:', gameMap
         appIcon.setToolTip('Online streamers');
 
         if currStreamers.length == 0
@@ -102,12 +107,18 @@ tick = ->
 
         console.log 'gameMap:',gameMap
 
+
+#WENT HERE
         createMenu(gameMap, labels)
 
         for streamer in currStreamers
-          notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer)
+          notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer) and shouldNotify
+
       else
         console.log 'an error!',err
+
+
+
   , (error)->
     console.log 'error was thrown:', error
 
@@ -119,6 +130,7 @@ streamWindow = null
 
 createMenu = (gameMap = {}, labels = [])->
   # Create Menu
+  console.log 'CREATING WITH GAME MAP:', gameMap
   for key in Object.keys(gameMap)
     gameMap[key].sort (a,b)->
       return -1 if a.display_name < b.display_name
@@ -132,11 +144,12 @@ createMenu = (gameMap = {}, labels = [])->
 
     for streamer in gameMap[key]
       ((streamer)->
+        console.log 'muh labels:', labels, streamer.display_name
         labels.push({
           label: streamer.display_name
           type: 'normal'
           click: -> openStream(streamer.name)
-        })
+        }) if streamer.display_name not in labels
       )(streamer)
     labels.push({
       type: 'separator'
@@ -199,7 +212,7 @@ openStream = (streamer)->
       console.log "exec error: #{error}" if error
       if error
         # Hacky way to try again with Livestreamer on path (mostly for windows)
-        exec "livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
+        child = exec "livestreamer twitch.tv/#{streamer} best", (error, stdout, stderr)->
           if error #display error if it is still failing
             errorWindow = new BrowserWindow({
               width: 400
@@ -208,8 +221,8 @@ openStream = (streamer)->
             })
             errorUrl = path.join('file://', __dirname, '/views/error.html')
             errorWindow.loadUrl(errorUrl)
-            loadingSplays.destroy()
-  child.stdout.on 'data', (data) -> loadingSplash.destroy() if data.toString().includes('Starting player')
+            loadingSplash.destroy()
+  child.stdout.on 'data', (data) -> loadingSplash.destroy() if data.toString().includes('Starting player') or data.toString().includes('Renderer process started')
 
 dialog = require('dialog')
 ipc = require('ipc')
@@ -255,18 +268,19 @@ openSettings = ->
   pageURL = path.join('file://',__dirname,'/views/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
-    streamWindow.webContents.send('settingsData', {username: user.username, version: version, lastUpdate: config.lastUpdate})
+    streamWindow.webContents.send('settingsData', {username: user.username, version: version, lastUpdate: config.lastUpdate, shouldNotify: shouldNotify})
   )
 
   ipc.on 'saveSettings', (event, arg)->
     if arg
 
-      newUser = new User(arg)
+      newUser = new User(arg.username)
+      shouldNotify = arg.notify
       prevStreamers = []
       currStreamers = []
 
       newUser.getFollowed().then (data)->
-        username = arg
+        username = arg.username
         config.user = username
         user = newUser
         streamWindow.close() if streamWindow
@@ -285,7 +299,7 @@ openSettings = ->
 
 app.on 'ready', ->
   console.log 'app:',app.dock
-  app.dock.hide()
+#  app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
   createMenu() # Create an empty menu immediately
