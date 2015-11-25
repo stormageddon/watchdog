@@ -1,3 +1,20 @@
+# 0.2.0 (11-25-15)
+
+## Build changes
+
+`make run` replaced with `make compile`. This will generate the built applications. Windows x64 build was added.
+
+## Bug Fixes
+
+- Fixed bug with saving user settings
+- Updated README
+
+## Features
+
+- Added a setting to disable notifications
+- Large refactor of codebase - created a number of models that are used within the watchdog app
+
+
 # 0.1.5 (08-06-15)
 
 ## Build Changes
