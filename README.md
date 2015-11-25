@@ -1,5 +1,7 @@
 # Watchdog
 
+![Watchdog, Media](/app/img/watchdog-icon.png)
+
 ## About
 Watchdog is a simple application for the Twitch diehard. It removes the pain of opening your browser, loading the streamers you follow, and finally (after YEARS of loading screens) seeing if there's anyone even worth watching currently streaming. Instead, you can run a single command from your terminal and immediately know who is streaming - before you've even opened a browser!
 
@@ -31,8 +33,17 @@ The build process for Watchdog is currently only streamlined for building Watchd
 2. Clone the repository with `git clone git@github.com:stormageddon/watchdog.git`
 3. navigate into the watchdog project
 4. Run `npm install` to install the dependencies.
-5. Run `make run` to build the Watchdog project into the `watchdog\dist` directory
-6. Run Watchdog.app
+5. Run `make compile` to build the Watchdog project into the `watchdog\dist` directory
+6. Run Watchdog.app from the dist folder
 
 ## Current status
 Watchdog is in the very early stages of development.
+
+## License
+Copyright (c) 2015
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
