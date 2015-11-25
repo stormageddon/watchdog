@@ -45,7 +45,8 @@ loadData = (err, data)->
     username = config.user?.username
 
     if username
-      user = new User(username, {shouldNotify: config.shouldNotify or true})
+      console.log 'should notify', config.user.shouldNotify
+      user = new User(username, {shouldNotify: config.user.shouldNotify})
       tick()
       setInterval( ->
         tick() if user
@@ -61,8 +62,6 @@ tick = ->
   prevStreamers = []
 
   user.getFollowed().then (results)->
-    console.log 'results:',results
-    console.log 'currStreamers:',currStreamers
     prevStreamers = (streamer.channel.name for streamer in currStreamers)
     currStreamers = []
     gameMap = {}
@@ -71,7 +70,6 @@ tick = ->
     async.each results, (channel, callback)=>
       currChannel = new Channel(channel.streamName, channel.displayName)
       currChannel.onlineStatus().then (stream)->
-        console.log 'THE STREAM:::',stream
         currStreamers.push(stream) if stream
         callback()
         return
@@ -79,14 +77,10 @@ tick = ->
       if not err
         selectedStreamer = null
 
-        console.log 'currstreamers:',currStreamers.length, currStreamers
         for streamer in currStreamers
-          console.log 'STREAMER::', streamer
           ((currStreamer)->
-            console.log 'the streamer label:',currStreamer.display_name, currStreamer.channel
             if gameMap[currStreamer.game] then gameMap[currStreamer.game].push(currStreamer) else gameMap[currStreamer.game] = [currStreamer]
           )(streamer.channel)
-        console.log 'Constructed map:', gameMap
         appIcon.setToolTip('Online streamers');
 
         if currStreamers.length == 0
@@ -102,10 +96,7 @@ tick = ->
         else
           appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Active.png'))
 
-        console.log 'gameMap:',gameMap
 
-
-#WENT HERE
         createMenu(gameMap, labels)
 
         for streamer in currStreamers
@@ -120,14 +111,12 @@ tick = ->
     console.log 'error was thrown:', error
 
 streamerIsAlreadyOnline = (streamer)->
-  console.log 'checking streamer:',streamer,prevStreamers,prevStreamers.indexOf(streamer.streamName) is not -1
   prevStreamers.indexOf(streamer.channel.name) > -1
 
 streamWindow = null
 
 createMenu = (gameMap = {}, labels = [])->
   # Create Menu
-  console.log 'CREATING WITH GAME MAP:', gameMap
   for key in Object.keys(gameMap)
     gameMap[key].sort (a,b)->
       return -1 if a.display_name < b.display_name
@@ -141,7 +130,6 @@ createMenu = (gameMap = {}, labels = [])->
 
     for streamer in gameMap[key]
       ((streamer)->
-        console.log 'muh labels:', labels, streamer.display_name
         labels.push({
           label: streamer.display_name
           type: 'normal'
@@ -192,10 +180,9 @@ isOutdated = false
 
 openUpdate = ->
   open 'http://stormageddon.github.io', (err)->
-    console.log 'an error:',err
+    console.log 'an error:',err if err
 
 openAbout = ->
-  console.log 'VERSION:',version
   aboutWindow = new BrowserWindow({ width: 400, height: 300, show: true, center: true })
   aboutWindow.loadUrl(path.join('file://', __dirname, '/views/about.html'))
   aboutWindow.webContents.on 'did-finish-load', ->
@@ -235,20 +222,17 @@ openSetup = ->
 
   ipc.on 'saveSetup', (event, arg)->
     if arg
-      console.log 'got user name:', arg.username
       newUser = new User(arg.username, {shouldNotify: true, lastUpdate: Date.now()})
       newUser.getFollowed().then (data)->
         user = newUser
         username = arg
-        config.user = username
+        config.user = {username: username}
         config.lastUpdate = Date.now()
-        config.shouldNotify = yes
-        console.log 'setting config: ',config
+        config.user.shouldNotify = yes
         json = JSON.stringify(config)
-        console.log 'setting json: ',json
         fs.writeFile(path.join(__dirname,'/config.json'), json, (err)->
           throw err if err
-          console.log 'wrote config to file'
+          console.log 'wrote config to file', config
           setupWindow.close() if setupWindow
           setupWindow = null
           tick()
@@ -275,16 +259,15 @@ openSettings = ->
 
   ipc.on 'saveSettings', (event, arg)->
     if arg
-
-      newUser = new User(arg.username, {shouldNotify: arg.shouldNotify if arg.shouldNotify})
+      newUser = new User(arg.username, {shouldNotify: arg.shouldNotify})
       newUser.settings.save()
       prevStreamers = []
       currStreamers = []
 
       newUser.getFollowed().then (data)->
         username = arg.username
-        config.user = username
-        config.shouldNotify = newUser.shouldNotify
+        config.user = {username: username}
+        config.user.shouldNotify = newUser.settings.shouldNotify
         console.log 'writing to config file:', config
         user = newUser
         streamWindow.close() if streamWindow
@@ -302,7 +285,6 @@ openSettings = ->
       streamWindow.webContents.send('error', 'Username is required')
 
 app.on 'ready', ->
-  console.log 'app:',app.dock
   app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
@@ -314,7 +296,6 @@ app.on 'ready', ->
     if not error
       try
         data = JSON.parse(body)
-        console.log 'data:',data
         if data.statusCode is 200
           isOutdated = true
     console.log 'error fetching version:',error if error
@@ -322,16 +303,14 @@ app.on 'ready', ->
 notifier = require('node-notifier')
 
 notifyNewStreamer = (streamer)->
-  console.log 'should notify:', user.settings
   return if not user.settings.shouldNotify
-  console.log 'did not return', streamer.channel.display_name
 
   notifier.notify( {
     title: 'Now Online'
     message: streamer.channel.display_name
     sender: 'com.github.electron'
   }, (err)->
-    console.log 'err:',err
+    console.log 'err:',err if err
   )
 
 

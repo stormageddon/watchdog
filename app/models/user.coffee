@@ -13,13 +13,11 @@ class User
     @settings = new Settings(settings)
 
   getFollowed: ->
-    console.log 'getting followed'
     deferred = Q.defer()
     request "https://api.twitch.tv/kraken/users/#{@username}/follows/channels?limit=#{FETCH_LIMIT}", (error, response, body)->
       if not error
         try
           data = JSON.parse(body)
-          console.log 'data:',data
         catch error
           deferred.reject(body)
         if data

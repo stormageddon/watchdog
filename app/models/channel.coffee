@@ -9,14 +9,12 @@ class Channel
     @currentGame = null
 
   onlineStatus: ->
-    console.log 'getting status of channel'
     deferred = Q.defer()
     request "https://api.twitch.tv/kraken/streams/#{@name}", (error, response, body)->
       if not error
         stream = {}
         try
           stream = JSON.parse(body).stream
-          console.log 'resolving stream:',stream
           @currentGame = stream.game if stream
           deferred.resolve(stream)
         catch err

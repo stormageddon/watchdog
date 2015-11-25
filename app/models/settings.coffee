@@ -12,8 +12,6 @@ class Settings
 
 
   save: ->
-    console.log 'THE SETTINGS:', JSON.stringify(this)
-#    fs.writeFile.path.join(__dirname, 'config.json'), JSON.stringify(this)
-#
+    this
 
 module.exports = Settings
