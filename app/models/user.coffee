@@ -1,16 +1,21 @@
 'use strict'
 
 request = require('request')
+Settings = require('./Settings')
 Q = require('q')
+FETCH_LIMIT = 100 # After 100, we will need to paginate via the twitch api
 
 class User
-  constructor: (@username)->
+  constructor: (username, settings = {shouldNotify: true})->
+    @username = username
     @followed = []
+    settings.username = username
+    @settings = new Settings(settings)
 
   getFollowed: ->
     console.log 'getting followed'
     deferred = Q.defer()
-    request "https://api.twitch.tv/kraken/users/#{@username}/follows/channels", (error, response, body)->
+    request "https://api.twitch.tv/kraken/users/#{@username}/follows/channels?limit=#{FETCH_LIMIT}", (error, response, body)->
       if not error
         try
           data = JSON.parse(body)
@@ -26,4 +31,5 @@ class User
       else
         deferred.reject(new Error(error))
     return deferred.promise
+
 module.exports = User

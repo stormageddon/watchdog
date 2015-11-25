@@ -69,6 +69,7 @@ module.exports = (grunt)->
           version: '0.30.2'
           platform: 'darwin'
           arch: 'x64'
+          asar: false
       windowsBuild:
         options:
           name: 'Watchdog'
@@ -77,6 +78,7 @@ module.exports = (grunt)->
           version: '0.30.2'
           platform: 'win32'
           arch: 'all'
+          asar: false
     chmod:
       options:
         mode: '755'
@@ -87,6 +89,5 @@ module.exports = (grunt)->
   grunt.registerTask 'compile', [
     'coffee'
     'copy'
-    'chmod'
     'electron'
   ]

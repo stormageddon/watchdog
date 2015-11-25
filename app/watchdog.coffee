@@ -14,6 +14,7 @@ path = require('path')
 exec = require('child_process').exec
 fs = require('fs')
 User = require('./models/user.js')
+Streamer = require('./models/streamer.js')
 Q = require('q')
 Channel = require('./models/channel.js')
 autoUpdater = require('auto-updater')
@@ -37,18 +38,14 @@ minutes = .5
 the_interval = minutes * 60 * 1000
 config = {}
 setupWindow = {}
-shouldNotify = true
 
 loadData = (err, data)->
   if not err
     config = JSON.parse(data)
-    username = config.user
-
-    shouldNotify = config.shouldNotify if config.shouldNotify
-    console.log "should notify: #{shouldNotify}"
+    username = config.user?.username
 
     if username
-      user = new User(username)
+      user = new User(username, {shouldNotify: config.shouldNotify or true})
       tick()
       setInterval( ->
         tick() if user
@@ -112,7 +109,7 @@ tick = ->
         createMenu(gameMap, labels)
 
         for streamer in currStreamers
-          notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer) and shouldNotify
+          notifyNewStreamer(streamer) if not streamerIsAlreadyOnline(streamer)
 
       else
         console.log 'an error!',err
@@ -238,22 +235,27 @@ openSetup = ->
 
   ipc.on 'saveSetup', (event, arg)->
     if arg
-      newUser = new User(arg)
+      console.log 'got user name:', arg.username
+      newUser = new User(arg.username, {shouldNotify: true, lastUpdate: Date.now()})
       newUser.getFollowed().then (data)->
         user = newUser
         username = arg
         config.user = username
         config.lastUpdate = Date.now()
+        config.shouldNotify = yes
         console.log 'setting config: ',config
-        fs.writeFile(path.join(__dirname,'/config.json'), JSON.stringify(config), (err)->
+        json = JSON.stringify(config)
+        console.log 'setting json: ',json
+        fs.writeFile(path.join(__dirname,'/config.json'), json, (err)->
           throw err if err
+          console.log 'wrote config to file'
+          setupWindow.close() if setupWindow
+          setupWindow = null
+          tick()
+          setInterval( ->
+            tick() if username
+          , the_interval)
         )
-        setupWindow.close() if setupWindow
-        setupWindow = null
-        tick()
-        setInterval( ->
-          tick() if username
-        , the_interval)
       , (error)->
         setupWindow.webContents.send('error', error.message) if error.status is 404
     else
@@ -268,20 +270,22 @@ openSettings = ->
   pageURL = path.join('file://',__dirname,'/views/settings.html')
   streamWindow.loadUrl(pageURL)
   streamWindow.webContents.on('did-finish-load', ->
-    streamWindow.webContents.send('settingsData', {username: user.username, version: version, lastUpdate: config.lastUpdate, shouldNotify: shouldNotify})
+    streamWindow.webContents.send('settingsData', {username: user.username, version: version, lastUpdate: config.lastUpdate, shouldNotify: user.settings.shouldNotify})
   )
 
   ipc.on 'saveSettings', (event, arg)->
     if arg
 
-      newUser = new User(arg.username)
-      shouldNotify = arg.notify
+      newUser = new User(arg.username, {shouldNotify: arg.shouldNotify if arg.shouldNotify})
+      newUser.settings.save()
       prevStreamers = []
       currStreamers = []
 
       newUser.getFollowed().then (data)->
         username = arg.username
         config.user = username
+        config.shouldNotify = newUser.shouldNotify
+        console.log 'writing to config file:', config
         user = newUser
         streamWindow.close() if streamWindow
         streamWindow = null
@@ -299,7 +303,7 @@ openSettings = ->
 
 app.on 'ready', ->
   console.log 'app:',app.dock
-#  app.dock.hide()
+  app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
   appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
   createMenu() # Create an empty menu immediately
@@ -318,8 +322,10 @@ app.on 'ready', ->
 notifier = require('node-notifier')
 
 notifyNewStreamer = (streamer)->
-  console.log 'NOTIFY',streamer.channel.display_name
-  console.log 'notifier:',notifier
+  console.log 'should notify:', user.settings
+  return if not user.settings.shouldNotify
+  console.log 'did not return', streamer.channel.display_name
+
   notifier.notify( {
     title: 'Now Online'
     message: streamer.channel.display_name
@@ -330,6 +336,4 @@ notifyNewStreamer = (streamer)->
 
 
 close = ->
-  streamWindow = null
-  appIcon.destroy()
   app.quit()

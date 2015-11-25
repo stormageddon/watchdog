@@ -9,7 +9,7 @@
     <script>
       var updateSettings = function(e) {
         if (e.keyCode == 13) {
-          require('ipc').send('saveSetup', document.getElementById("usernameTextField").value);
+          require('ipc').send('saveSetup', {username: document.getElementById("usernameTextField").value});
         }
       };
 
