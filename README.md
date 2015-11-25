@@ -1,6 +1,6 @@
 # Watchdog
 
-![Watchdog, Media](/app/img/watchdog-icon.png =100x)
+![Watchdog, Media](/app/img/watchdog-icon.png =100x100)
 
 ## About
 Watchdog is a simple application for the Twitch diehard. It removes the pain of opening your browser, loading the streamers you follow, and finally (after YEARS of loading screens) seeing if there's anyone even worth watching currently streaming. Instead, you can run a single command from your terminal and immediately know who is streaming - before you've even opened a browser!
