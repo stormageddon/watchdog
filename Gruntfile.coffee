@@ -79,6 +79,15 @@ module.exports = (grunt)->
           platform: 'win32'
           arch: 'all'
           asar: false
+      linuxBuild:
+        options:
+          name: 'Watchdog'
+          dir: '_app'
+          out: 'dist'
+          version: '0.30.2'
+          platform: 'linux'
+          arch: 'x64'
+          asar: false
     chmod:
       options:
         mode: '755'
