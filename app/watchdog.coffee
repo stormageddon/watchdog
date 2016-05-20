@@ -84,7 +84,7 @@ tick = ->
         appIcon.setToolTip('Online streamers');
 
         if currStreamers.length == 0
-          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
+          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-InactiveTemplate.png'))
           labels.push({
             label: 'No live streams'
             enabled: false
@@ -94,7 +94,7 @@ tick = ->
             type: 'separator'
           })
         else
-          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-Active.png'))
+          appIcon.setImage(path.join(__dirname, 'img/WatchDog-Menu-ActiveTemplate.png'))
 
 
         createMenu(gameMap, labels)
@@ -287,7 +287,7 @@ openSettings = ->
 app.on 'ready', ->
   app.dock.hide()
   fs.readFile(path.join(__dirname, 'config.json'), loadData)
-  appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-Inactive.png'))
+  appIcon = new Tray(path.join(__dirname, 'img/WatchDog-Menu-InactiveTemplate.png'))
   createMenu() # Create an empty menu immediately
 
   require('events').EventEmitter
